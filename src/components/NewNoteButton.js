@@ -8,7 +8,7 @@ export default function NewNoteButton({ navigation }) {
   return (
     <Pressable
       onPress={() => navigation.navigate("Editor")}
-      style={styles.button}
+      style={[styles.button, { backgroundColor: colors.primary }]}
     >
       <Feather name="edit-2" size={24} style={{ color: colors.button }} />
     </Pressable>
@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
-    backgroundColor: "#427DDE",
     borderRadius: 50,
   },
 });

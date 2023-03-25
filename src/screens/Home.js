@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
-import NewNoteButton from "./NewNoteButton";
-import NoteListItem from "./NoteListItem";
-import mock from "../mock.json";
+import NewNoteButton from "../components/NewNoteButton";
+import NoteListItem from "../components/NoteListItem";
+import mock from "../../mock.json";
 
 export default function Home({ navigation }) {
   const renderNote = ({ item }) => {

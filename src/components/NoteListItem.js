@@ -49,15 +49,11 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   badge: {
-    // color: "#427DDE",
-    // backgroundColor: "#427DDE50",
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     borderRadius: 2,
     textTransform: "uppercase",
     fontWeight: "bold",
     fontSize: 12,
-    // borderColor: "#427DDE",
-    // borderWidth: 1,
   },
   date: {
     fontSize: 10,
