@@ -1,12 +1,18 @@
-import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, View, Pressable, TextInput } from "react-native";
+import { StyleSheet, View, Text, TextInput } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 export default function Editor() {
   const { colors } = useTheme();
+  const datetime = new Date().toLocaleDateString("it-IT", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <View style={styles.container}>
+      <Text style={[styles.date, { color: colors.text }]}>{datetime}</Text>
       <TextInput
         style={[styles.title, { borderBottomColor: colors.border }]}
         placeholder="Title"
@@ -33,5 +39,10 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+  },
+  date: {
+    fontSize: 12,
+    paddingHorizontal: 16,
+    opacity: 0.7,
   },
 });
