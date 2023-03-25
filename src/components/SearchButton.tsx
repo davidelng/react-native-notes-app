@@ -7,7 +7,11 @@ export default function SearchButton() {
 
   return (
     <Pressable onPress={() => alert("Search")}>
-      <Feather name="search" size={24} style={{ color: colors.text }} />
+      <Feather
+        name="search"
+        size={24}
+        style={{ color: colors.text, marginRight: 16 }}
+      />
     </Pressable>
   );
 }
