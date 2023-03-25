@@ -2,7 +2,7 @@ import { Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 
-export default function TrashNoteButton({ navigation }) {
+export default function TrashNoteButton() {
   const { colors } = useTheme();
 
   return (

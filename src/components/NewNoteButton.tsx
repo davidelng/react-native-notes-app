@@ -1,16 +1,23 @@
-import { StyleSheet, Pressable } from "react-native";
+import { StyleSheet, Pressable, useColorScheme } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 
 export default function NewNoteButton({ navigation }) {
   const { colors } = useTheme();
+  const scheme = useColorScheme();
 
   return (
     <Pressable
       onPress={() => navigation.navigate("Editor")}
       style={[styles.button, { backgroundColor: colors.primary }]}
     >
-      <Feather name="edit-2" size={24} style={{ color: colors.button }} />
+      <Feather
+        name="edit-2"
+        size={24}
+        style={
+          scheme === "dark" ? { color: colors.text } : { color: colors.card }
+        }
+      />
     </Pressable>
   );
 }

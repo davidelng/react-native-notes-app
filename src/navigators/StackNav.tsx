@@ -2,11 +2,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DrawerNav from "./DrawerNav";
 import Editor from "../screens/Editor";
 import TrashNoteButton from "../components/TrashNoteButton";
+import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNav() {
-  const screenOptions = {
+  const screenOptions: NativeStackNavigationOptions = {
     headerShadowVisible: false,
     headerTitleStyle: {
       fontWeight: "bold",
