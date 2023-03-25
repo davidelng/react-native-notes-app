@@ -1,18 +1,21 @@
 import { useState, useCallback, useEffect } from "react";
 import { StyleSheet, View, Pressable, TextInput } from "react-native";
+import { useTheme } from "@react-navigation/native";
 
 export default function Editor() {
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
       <TextInput
-        style={styles.title}
+        style={[styles.title, { borderBottomColor: colors.border }]}
         placeholder="Title"
-        placeholderTextColor="#E0E0E0"
+        placeholderTextColor={colors.text}
       />
       <TextInput
         style={styles.content}
         placeholder="Content"
-        placeholderTextColor="#E0E0E0"
+        placeholderTextColor={colors.text}
         multiline
       />
     </View>
@@ -25,7 +28,6 @@ const styles = StyleSheet.create({
   },
   title: {
     padding: 16,
-    borderBottomColor: "#212121",
     borderBottomWidth: 1,
     fontSize: 20,
   },

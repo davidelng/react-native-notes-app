@@ -1,14 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, View, Pressable, Text, FlatList } from "react-native";
+import { StyleSheet, View, FlatList } from "react-native";
 import NewNoteButton from "./NewNoteButton";
 import NoteListItem from "./NoteListItem";
 import mock from "../mock.json";
 
 export default function Home({ navigation }) {
-  const notesList = mock.map((note) => (
-    <NoteListItem navigation={navigation} data={note} />
-  ));
-
   const renderNote = ({ item }) => {
     return (
       <NoteListItem
@@ -35,8 +31,5 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-  },
-  text: {
-    color: "#E0E0E0",
   },
 });

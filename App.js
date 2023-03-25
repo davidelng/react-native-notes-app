@@ -1,45 +1,28 @@
-import { useState, useCallback, useEffect } from "react";
-import { StyleSheet, Pressable } from "react-native";
-import {
-  NavigationContainer,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native";
+import { useState } from "react";
+import { useColorScheme } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
-import { useFonts } from "expo-font";
-import { Feather } from "@expo/vector-icons";
-import mockData from "./mock.json";
+import { CustomDarkTheme, CustomDefaultTheme } from "./themes";
 import Home from "./components/Home";
 import Editor from "./components/Editor";
 import MenuButton from "./components/MenuButton";
+import SearchButton from "./components/SearchButton";
 import TrashNoteButton from "./components/TrashNoteButton";
 
 const Stack = createNativeStackNavigator();
 
-const CustomTheme = {
-  ...DarkTheme,
-  dark: true,
-  colors: {
-    ...DarkTheme.colors,
-    primary: "#427DDE",
-    background: "#000000",
-    card: "#212121",
-    border: "#212121",
-    text: "#E0E0E0",
-  },
-};
-
 export default function App() {
+  const scheme = useColorScheme();
+
   return (
-    <NavigationContainer theme={CustomTheme}>
+    <NavigationContainer
+      theme={scheme === "dark" ? CustomDarkTheme : CustomDefaultTheme}
+    >
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerStyle: {
-            backgroundColor: "#000000",
-          },
-          headerTintColor: "#fff",
+          headerShadowVisible: false,
           headerTitleStyle: {
             fontWeight: "bold",
           },
@@ -52,6 +35,7 @@ export default function App() {
           options={{
             headerTitle: "",
             headerLeft: () => <MenuButton />,
+            headerRight: () => <SearchButton />,
           }}
         />
         <Stack.Screen
@@ -63,9 +47,7 @@ export default function App() {
           }}
         />
       </Stack.Navigator>
-      <StatusBar style="light" />
+      <StatusBar style="auto" />
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({});
