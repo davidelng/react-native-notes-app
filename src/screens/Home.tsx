@@ -2,7 +2,6 @@ import { StyleSheet, View, FlatList } from "react-native";
 import NewNoteButton from "../components/NewNoteButton";
 import NoteListItem from "../components/NoteListItem";
 import mock from "../../mock.json";
-import { TextInput } from "react-native-gesture-handler";
 
 export default function Home({ navigation }) {
   const renderNote = ({ item }) => {

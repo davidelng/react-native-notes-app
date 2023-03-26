@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, Text, useColorScheme } from "react-native";
+import { StyleSheet, View, FlatList, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 
@@ -22,7 +22,6 @@ const mock = [
 
 export default function TagsList() {
   const { colors } = useTheme();
-  const scheme = useColorScheme();
 
   const renderTag = ({ item }) => {
     return (
@@ -46,10 +45,7 @@ export default function TagsList() {
 
   return (
     <View
-      style={[
-        styles.container,
-        { backgroundColor: scheme === "dark" ? "#181818" : "#B8B8B8" },
-      ]}
+      style={[styles.container, { backgroundColor: colors.backgroundLighter }]}
     >
       <View style={styles.header}>
         <Feather name="tag" size={24} style={{ color: colors.text }} />
@@ -73,8 +69,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: "#303030",
-    // backgroundColor: "#181818",
-    // marginTop: 16,
   },
   header: {
     display: "flex",
