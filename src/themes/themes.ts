@@ -28,12 +28,9 @@ export const LightDefault: ExtendedTheme = {
   },
 };
 
-// BLUE = #427DDE
-// TEAL = #00CAB1
-// TOMATO = #FF6347
-// ROSE = #F43F5E
-// AMBER = #F59E0B
-// LIME = #84CC16
-// PINK = #A855F7
-// PURPLE = #7C3AED
-// STONE = #78716C
+// export const DarkOled: ExtendedTheme = {}
+// export const TokyoNight: ExtendedTheme = {}
+// export const Solarized: ExtendedTheme = {}
+// export const RosePine: ExtendedTheme = {}
+// export const Gruvbox: ExtendedTheme = {}
+// export const Nord: ExtendedTheme = {}
