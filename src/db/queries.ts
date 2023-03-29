@@ -1,5 +1,7 @@
 export const queries = new Map<string, string>();
 
+// NOTES
+
 queries.set(
   `createTableNotes`,
   `CREATE TABLE IF NOT EXISTS notes (
@@ -14,6 +16,45 @@ queries.set(
 );
 
 queries.set(
+  `getAllNotes`,
+  `SELECT 
+    n.id, n.title, n.content, n.pinned, n.date_upd as timestamp, 
+    t.name as tag, t.color as tag_color 
+    FROM notes n 
+    LEFT JOIN tags t ON n.tag = t.id
+    ORDER BY timestamp DESC`
+);
+
+queries.set(
+  `getNotesByTag`,
+  `SELECT 
+    n.id, n.title, n.content, n.pinned, n.date_upd as timestamp, 
+    t.name as tag, t.color as tag_color 
+    FROM notes n 
+    LEFT JOIN tags t ON n.tag = t.id
+    WHERE tag = (?)
+    ORDER BY timestamp DESC`
+);
+
+queries.set(
+  `insertNote`,
+  `INSERT INTO notes
+    (title, content, pinned, date_upd, tag) 
+    VALUES (?, ?, ?, datetime(CURRENT_TIMESTAMP, "localtime"), ?)`
+);
+
+queries.set(
+  `updateNote`,
+  `UPDATE notes
+    SET (title = ?, content = ?, pinned = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime"), tag = ?) 
+    WHERE id = ?`
+);
+
+queries.set(`deleteNote`, `DELETE FROM notes  WHERE id = ?`);
+
+// TAGS
+
+queries.set(
   `createTableTags`,
   `CREATE TABLE IF NOT EXISTS tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -25,11 +66,19 @@ queries.set(
 );
 
 queries.set(
-  `getAllNotes`,
-  `SELECT 
-    n.id, n.title, n.content, n.pinned, n.date_upd as timestamp, 
-    t.name as tag, t.color as tag_color 
-    FROM notes n 
-    LEFT JOIN tags t ON n.tag = t.id
-    ORDER BY timestamp DESC`
+  `insertTag`,
+  `INSERT INTO tags
+    (name, color) 
+    VALUES (?, ?)`
 );
+
+queries.set(
+  `updateTag`,
+  `UPDATE tags
+    SET (name = ?, color = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")) 
+    WHERE id = ?`
+);
+
+queries.set(`deleteTag`, `DELETE FROM tags  WHERE id = ?`);
+
+// CONFIGURATION

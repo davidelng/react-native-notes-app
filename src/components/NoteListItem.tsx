@@ -41,7 +41,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
           {data.content}
         </Text>
         <View style={styles.badgeContainer}>
-          {data.category && (
+          {data.tag && (
             <Text
               style={[
                 styles.badge,
@@ -51,7 +51,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
                 },
               ]}
             >
-              {data.category}
+              {data.tag}
             </Text>
           )}
           <Text

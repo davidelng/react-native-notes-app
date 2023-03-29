@@ -1,7 +1,6 @@
 import { StyleSheet, View, FlatList } from "react-native";
 import NewNoteButton from "../components/NewNoteButton";
 import NoteListItem from "../components/NoteListItem";
-import mock from "../../mock.json";
 import { useEffect, useState } from "react";
 
 import * as Db from "../db/Db";
@@ -16,6 +15,8 @@ export default function Home({ navigation }) {
       tx.executeSql(
         queries.get("getAllNotes"),
         null,
+        // queries.get("getNotesByTag"),
+        // [1],
         (txObj, result) => {
           setNotes(result.rows._array);
         },
@@ -31,7 +32,7 @@ export default function Home({ navigation }) {
       <NoteListItem
         navigation={navigation}
         data={item}
-        onPress={() => alert(item.id)}
+        onPress={() => navigation.navigate("Editor")}
       />
     );
   };
@@ -43,6 +44,7 @@ export default function Home({ navigation }) {
         renderItem={renderNote}
         keyExtractor={(item) => item.id}
         // extraData={selectedId}
+        style={{ flex: 1 }}
       />
       <NewNoteButton navigation={navigation} />
     </View>
