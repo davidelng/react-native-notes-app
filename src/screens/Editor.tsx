@@ -1,11 +1,11 @@
-import { StyleSheet, View, Text, TextInput, Alert } from "react-native";
+import { StyleSheet, View, Text, TextInput, Button } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useState } from "react";
-import * as Db from "../db/Db";
+// import * as Db from "../db/Db";
 
 export default function Editor({ navigation }) {
   const [text, setText] = useState("");
-  const db = Db.getConnection("notes.sqlite");
+  // const db = Db.getConnection("notes.sqlite");
 
   const { colors } = useTheme();
   const datetime = new Date().toLocaleDateString("it-IT", {
@@ -34,6 +34,9 @@ export default function Editor({ navigation }) {
         placeholderTextColor={colors.text}
         multiline
       />
+      {/* <View style={{ margin: 20 }}>
+        <Button title="Salva" color={colors.primary} />
+      </View> */}
     </View>
   );
 }
@@ -49,6 +52,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    flex: 1,
+    textAlignVertical: "top",
   },
   date: {
     fontSize: 12,

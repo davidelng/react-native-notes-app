@@ -34,7 +34,15 @@ export default function NoteListItem({ navigation, data, onPress }) {
   const timestamp = dateFormatter(data.timestamp);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={() => alert("Long press!")}
+      android_ripple={{
+        color: colors.backgroundLighter,
+        borderless: false,
+        foreground: false,
+      }}
+    >
       <View style={[styles.container, { borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
         <Text style={[styles.content, { color: colors.text }]}>
