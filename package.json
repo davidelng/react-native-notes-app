@@ -1,6 +1,20 @@
 {
   "name": "nativenotes",
-  "version": "1.0.0",
+  "author": "davidelng",
+  "version": "0.2.0",
+  "description": "A note-taking app for my device",
+  "keywords": [
+    "react",
+    "react-native",
+    "expo",
+    "typescript",
+    "sqlite",
+    "notes",
+    "app",
+    "native",
+    "notes-app"
+  ],
+  "license": "ISC",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
