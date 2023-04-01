@@ -13,6 +13,7 @@ import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
 import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
 import { Note } from "../../types";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
@@ -189,6 +190,17 @@ export default function Editor({ route, navigation }) {
               { backgroundColor: colors.backgroundLighter },
             ]}
           >
+            <View
+              style={{
+                margin: "auto",
+                padding: 16,
+                display: "flex",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <AntDesign name="warning" size={24} color="#8b0000" />
+            </View>
             <Text style={[styles.modalText, { color: colors.text }]}>
               Procedere con l'eliminazione? L'azione è irreversibile
             </Text>

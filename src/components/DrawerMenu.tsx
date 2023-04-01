@@ -14,13 +14,13 @@ export default function DrawerMenu(props) {
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       <DrawerItemList {...props} />
       {/* <TagsList /> */}
-      <DrawerItem
+      {/* <DrawerItem
         label="Impostazioni"
         onPress={() => alert("Impostazioni")}
         icon={() => (
           <Feather name="settings" size={24} style={{ color: colors.text }} />
         )}
-      />
+      /> */}
     </DrawerContentScrollView>
   );
 }

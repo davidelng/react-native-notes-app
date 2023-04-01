@@ -1,6 +1,7 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { dateFormatter } from "../lib/dateUtils";
+import TagBadge from "./TagBadge";
 
 export default function NoteListItem({ navigation, data, onPress }) {
   const { colors } = useTheme();
@@ -22,19 +23,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
           {data.content}
         </Text>
         <View style={styles.badgeContainer}>
-          {data.tag && (
-            <Text
-              style={[
-                styles.badge,
-                {
-                  color: colors.primary,
-                  backgroundColor: colors.primary + "50",
-                },
-              ]}
-            >
-              {data.tag}
-            </Text>
-          )}
+          {data.tag && <TagBadge accent={colors.primary} content={data.tag} />}
           <Text
             style={[
               styles.date,
@@ -67,13 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-  },
-  badge: {
-    paddingHorizontal: 6,
-    borderRadius: 2,
-    textTransform: "uppercase",
-    fontWeight: "bold",
-    fontSize: 12,
   },
   date: {
     fontSize: 10,
