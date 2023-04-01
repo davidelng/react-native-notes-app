@@ -9,6 +9,7 @@ import StackNav from "./src/navigators/StackNav";
 
 export default function App() {
   const scheme = useColorScheme();
+  const theme = scheme === "dark" ? DarkDefault : LightDefault;
   // const db = Db.getConnection("notes.sqlite");
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer theme={scheme === "dark" ? DarkDefault : LightDefault}>
+    <NavigationContainer theme={theme}>
       <StackNav />
       <StatusBar style="auto" />
     </NavigationContainer>

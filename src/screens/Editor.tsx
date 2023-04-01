@@ -12,15 +12,7 @@ import { useState, useEffect } from "react";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
-
-function getDate() {
-  return new Date().toLocaleDateString("it-IT", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
+import { dateFormatter, getDate } from "../lib/dateUtils";
 
 const emptyNote = {
   id: null,
@@ -43,7 +35,7 @@ export default function Editor({ route, navigation }) {
     title: data.title,
     content: data.content,
     tag: data.tag,
-    date: data.date,
+    date: dateFormatter(data.timestamp),
     pinned: data.pinned,
   });
 
@@ -62,13 +54,13 @@ export default function Editor({ route, navigation }) {
       });
     }
 
-    // const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-    //   e.preventDefault();
-    //   manageNote();
-    //   // navigation.dispatch(e.data.action);
-    // });
-    // return unsubscribe;
-  }, [navigation]);
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      e.preventDefault();
+      manageNote();
+      navigation.dispatch(e.data.action);
+    });
+    return unsubscribe;
+  }, [navigation, note]);
 
   function createNote(note) {
     db.transaction((tx) =>
@@ -76,7 +68,8 @@ export default function Editor({ route, navigation }) {
         queries.get("insertNote"),
         [note.title, note.content, 0, 1],
         (txObj, result) => {
-          alert("Nota aggiunta");
+          // alert("Nota aggiunta");
+          return true;
         },
         (txObj, err) => {
           alert(err.message);
@@ -92,7 +85,8 @@ export default function Editor({ route, navigation }) {
         queries.get("updateNote"),
         [note.title, note.content, 0, 1, note.id],
         (txObj, result) => {
-          alert("Nota modificata");
+          // alert("Nota modificata");
+          return true;
         },
         (txObj, err) => {
           alert(err.message);
@@ -103,12 +97,13 @@ export default function Editor({ route, navigation }) {
   }
 
   function manageNote() {
-    if (note.id === null && note.title !== null) {
-      // return createNote(note);
-      alert(note.title);
+    if (note.id === null && note.title !== "") {
+      createNote(note);
+      return;
+    } else if (note.id !== null && note.title !== "") {
+      updateNote(note);
+      return;
     }
-    // return updateNote(note);
-    alert(note.id);
   }
 
   function deleteNote(id) {
@@ -117,7 +112,8 @@ export default function Editor({ route, navigation }) {
         queries.get("deleteNote"),
         [id],
         (txObj, result) => {
-          alert("Nota eliminata");
+          // alert("Nota eliminata");
+          return true;
         },
         (txObj, err) => {
           alert(err.message);
@@ -146,8 +142,8 @@ export default function Editor({ route, navigation }) {
       />
       <TextInput
         style={[styles.content, { color: colors.text }]}
-        placeholder="Content"
-        placeholderTextColor={colors.text}
+        placeholder="..."
+        placeholderTextColor={colors.notification}
         multiline
         value={note.content}
         onChangeText={(text) =>
@@ -156,9 +152,12 @@ export default function Editor({ route, navigation }) {
           })
         }
       />
-      <View style={{ margin: 20 }}>
+
+      {/* <View style={{ margin: 20 }}>
         <Button title="Salva" color={colors.primary} onPress={manageNote} />
-      </View>
+      </View> */}
+
+      {/* DELETE MODAL */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -211,6 +210,7 @@ export default function Editor({ route, navigation }) {
           </View>
         </View>
       </Modal>
+      {/* DELETE MODAL */}
     </View>
   );
 }
@@ -237,8 +237,6 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     marginTop: 22,
-    // flexDirection: "row",
-    // alignItems: "flex-end",
   },
   modalView: {
     borderTopLeftRadius: 20,
@@ -249,7 +247,6 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 4,
     padding: 10,
-    // elevation: 2,
     flex: 1,
   },
   textStyle: {
