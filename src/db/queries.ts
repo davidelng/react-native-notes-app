@@ -46,11 +46,11 @@ queries.set(
 queries.set(
   `updateNote`,
   `UPDATE notes
-    SET (title = ?, content = ?, pinned = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime"), tag = ?) 
+    SET title = ?, content = ?, pinned = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime"), tag = ?
     WHERE id = ?`
 );
 
-queries.set(`deleteNote`, `DELETE FROM notes  WHERE id = ?`);
+queries.set(`deleteNote`, `DELETE FROM notes WHERE id = ?`);
 
 // TAGS
 

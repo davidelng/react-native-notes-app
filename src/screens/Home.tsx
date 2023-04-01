@@ -11,12 +11,17 @@ export default function Home({ navigation }) {
   const [notes, setNotes] = useState([]);
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadData();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  function loadData() {
     db.transaction((tx) => {
       tx.executeSql(
         queries.get("getAllNotes"),
         null,
-        // queries.get("getNotesByTag"),
-        // [1],
         (txObj, result) => {
           setNotes(result.rows._array);
         },
@@ -25,14 +30,14 @@ export default function Home({ navigation }) {
         }
       );
     });
-  }, []);
+  }
 
   const renderNote = ({ item }) => {
     return (
       <NoteListItem
         navigation={navigation}
         data={item}
-        onPress={() => navigation.navigate("Editor")}
+        onPress={() => navigation.navigate("Editor", { data: item })}
       />
     );
   };

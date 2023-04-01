@@ -4,8 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { DarkDefault, LightDefault } from "./src/themes/themes";
 import StackNav from "./src/navigators/StackNav";
-import * as Db from "./src/db/Db";
-import { queries } from "./src/db/queries";
+// import * as Db from "./src/db/Db";
+// import { queries } from "./src/db/queries";
 
 export default function App() {
   const scheme = useColorScheme();
