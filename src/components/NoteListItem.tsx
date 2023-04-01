@@ -1,27 +1,47 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import { dateFormatter } from "../lib/dateUtils";
 
 export default function NoteListItem({ navigation, data, onPress }) {
   const { colors } = useTheme();
+  const timestamp = dateFormatter(data.timestamp);
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={() => alert("Long press!")}
+      android_ripple={{
+        color: colors.backgroundLighter,
+        borderless: false,
+        foreground: false,
+      }}
+    >
       <View style={[styles.container, { borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
         <Text style={[styles.content, { color: colors.text }]}>
           {data.content}
         </Text>
         <View style={styles.badgeContainer}>
+          {data.tag && (
+            <Text
+              style={[
+                styles.badge,
+                {
+                  color: colors.primary,
+                  backgroundColor: colors.primary + "50",
+                },
+              ]}
+            >
+              {data.tag}
+            </Text>
+          )}
           <Text
             style={[
-              styles.badge,
-              { color: colors.primary, backgroundColor: colors.primary + "50" },
+              styles.date,
+              { color: colors.notification, marginLeft: "auto" },
             ]}
           >
-            {data.category}
-          </Text>
-          <Text style={[styles.date, { color: colors.notification }]}>
-            25-03-2023
+            {timestamp}
           </Text>
         </View>
       </View>
