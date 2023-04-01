@@ -1,16 +1,29 @@
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, TextInput } from "react-native";
 import NewNoteButton from "../components/NewNoteButton";
 import NoteListItem from "../components/NoteListItem";
 import { useEffect, useState } from "react";
-
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
+import SearchButton from "../components/SearchButton";
+import FilterButton from "../components/FilterButton";
 
 export default function Home({ navigation }) {
   const db = Db.getConnection("notes.sqlite");
   const [notes, setNotes] = useState([]);
+  const [query, setQuery] = useState("");
+  const [isFiltering, setIsFiltering] = useState(false);
 
   useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <FilterButton
+          onPress={() => {
+            setIsFiltering((prev) => !prev);
+          }}
+        />
+      ),
+    });
+
     const unsubscribe = navigation.addListener("focus", () => {
       loadData();
     });
@@ -26,11 +39,16 @@ export default function Home({ navigation }) {
           setNotes(result.rows._array);
         },
         (txObj, err) => {
+          alert(err.message);
           return false;
         }
       );
     });
   }
+
+  const filteredNotes = notes.filter((note) =>
+    note.title.toLowerCase().includes(query.toLowerCase())
+  );
 
   const renderNote = ({ item }) => {
     return (
@@ -44,11 +62,37 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {isFiltering && (
+        <View
+          style={{
+            padding: 10,
+            margin: 10,
+            borderRadius: 4,
+            backgroundColor: "#303030",
+            display: "flex",
+            gap: 10,
+            flexDirection: "row",
+          }}
+        >
+          <SearchButton />
+          <TextInput
+            style={{
+              backgroundColor: "transparent",
+              color: "#fff",
+              flex: 1,
+            }}
+            placeholder="Search"
+            placeholderTextColor="#ffffff50"
+            value={query}
+            onChangeText={(text) => setQuery(text)}
+          />
+        </View>
+      )}
       <FlatList
-        data={notes}
+        data={filteredNotes}
         renderItem={renderNote}
         keyExtractor={(item) => item.id}
-        // extraData={selectedId}
+        // extraData={} // set this to re-render on a state change
         style={{ flex: 1 }}
       />
       <NewNoteButton navigation={navigation} />
