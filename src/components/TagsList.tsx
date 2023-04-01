@@ -56,7 +56,7 @@ export default function TagsList() {
         data={mock}
         renderItem={renderTag}
         keyExtractor={(item) => item.id}
-        // extraData={selectedId}
+        // extraData={}
       />
     </View>
   );

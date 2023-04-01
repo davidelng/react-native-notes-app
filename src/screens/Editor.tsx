@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Modal,
   Pressable,
 } from "react-native";
@@ -13,12 +12,13 @@ import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
 import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
+import { Note } from "../../types";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  const data =
+  const data: Note =
     route.params && route.params.data
       ? route.params.data
       : {
@@ -26,7 +26,7 @@ export default function Editor({ route, navigation }) {
           title: "",
           content: "",
           tag: null,
-          date: getDateForCreation(),
+          timestamp: getDateForCreation(),
           pinned: 0,
         };
 
@@ -35,7 +35,7 @@ export default function Editor({ route, navigation }) {
     title: data.title,
     content: data.content,
     tag: data.tag,
-    date: dateFormatter(data.timestamp),
+    timestamp: dateFormatter(data.timestamp),
     pinned: data.pinned,
   });
 
@@ -62,7 +62,7 @@ export default function Editor({ route, navigation }) {
     return unsubscribe;
   }, [navigation, note]);
 
-  function createNote(note) {
+  function createNote(note: Note) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("insertNote"),
@@ -79,7 +79,7 @@ export default function Editor({ route, navigation }) {
     );
   }
 
-  function updateNote(note) {
+  function updateNote(note: Note) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("updateNote"),
@@ -96,17 +96,25 @@ export default function Editor({ route, navigation }) {
     );
   }
 
+  function hasChanges(currentNote: Note, initialData: Note) {
+    return (
+      currentNote.title !== "" &&
+      (currentNote.title !== initialData.title ||
+        currentNote.content !== initialData.content)
+    );
+  }
+
   function manageNote() {
     if (note.id === null && note.title !== "") {
       createNote(note);
       return;
-    } else if (note.id !== null && note.title !== "") {
+    } else if (note.id !== null && hasChanges(note, data)) {
       updateNote(note);
       return;
     }
   }
 
-  function deleteNote(id) {
+  function deleteNote(id: number) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("deleteNote"),
@@ -125,7 +133,9 @@ export default function Editor({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.date, { color: colors.text }]}>{note.date}</Text>
+      <Text style={[styles.date, { color: colors.text }]}>
+        {note.timestamp}
+      </Text>
       <TextInput
         style={[
           styles.title,
@@ -153,9 +163,11 @@ export default function Editor({ route, navigation }) {
         }
       />
 
-      {/* <View style={{ margin: 20 }}>
+      {/* SAVE BUTTON
+      <View style={{ margin: 20 }}>
         <Button title="Salva" color={colors.primary} onPress={manageNote} />
-      </View> */}
+      </View> 
+      */}
 
       {/* DELETE MODAL */}
       <Modal

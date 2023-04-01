@@ -39,6 +39,7 @@ export default function Home({ navigation }) {
           setNotes(result.rows._array);
         },
         (txObj, err) => {
+          alert(err.message);
           return false;
         }
       );
@@ -91,7 +92,7 @@ export default function Home({ navigation }) {
         data={filteredNotes}
         renderItem={renderNote}
         keyExtractor={(item) => item.id}
-        // extraData={selectedId}
+        // extraData={} // set this to re-render on a state change
         style={{ flex: 1 }}
       />
       <NewNoteButton navigation={navigation} />
