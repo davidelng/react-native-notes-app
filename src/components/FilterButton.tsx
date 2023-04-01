@@ -2,15 +2,15 @@ import { Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 
-export default function SearchButton() {
+export default function FilterButton({ onPress }) {
   const { colors } = useTheme();
 
   return (
-    <Pressable onPress={() => {}}>
+    <Pressable onPress={onPress}>
       <Feather
-        name="search"
+        name="filter"
         size={24}
-        style={{ color: colors.notification, marginRight: 16 }}
+        style={{ color: colors.text, marginRight: 16 }}
       />
     </Pressable>
   );

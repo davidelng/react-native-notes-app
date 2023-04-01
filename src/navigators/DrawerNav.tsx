@@ -34,7 +34,7 @@ export default function DrawerNav() {
           headerTitle: "Note",
           headerTitleAlign: "center",
           headerTintColor: colors.text,
-          headerRight: () => <SearchButton />,
+          // headerRight: () => <SearchButton />,
           drawerIcon: () => (
             <MaterialCommunityIcons
               name="notebook-outline"

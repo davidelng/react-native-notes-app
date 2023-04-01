@@ -26,7 +26,7 @@ export function dateFormatter(date: string) {
   return timestamp;
 }
 
-export function getDate() {
+export function getDateForCreation() {
   return new Date().toLocaleDateString("it-IT", {
     weekday: "long",
     year: "numeric",

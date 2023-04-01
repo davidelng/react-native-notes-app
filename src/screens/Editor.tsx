@@ -12,23 +12,23 @@ import { useState, useEffect } from "react";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
-import { dateFormatter, getDate } from "../lib/dateUtils";
-
-const emptyNote = {
-  id: null,
-  title: "",
-  content: "",
-  tag: null,
-  date: getDate(),
-  pinned: 0,
-};
+import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const data =
-    route.params && route.params.data ? route.params.data : emptyNote;
+    route.params && route.params.data
+      ? route.params.data
+      : {
+          id: null,
+          title: "",
+          content: "",
+          tag: null,
+          date: getDateForCreation(),
+          pinned: 0,
+        };
 
   const [note, setNote] = useState({
     id: data.id,
@@ -66,7 +66,7 @@ export default function Editor({ route, navigation }) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("insertNote"),
-        [note.title, note.content, 0, 1],
+        [note.title, note.content, 0, null],
         (txObj, result) => {
           // alert("Nota aggiunta");
           return true;
