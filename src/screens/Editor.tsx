@@ -14,10 +14,13 @@ import TrashNoteButton from "../components/TrashNoteButton";
 import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
 import { Note } from "../../types";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import TagBadge from "../components/TagBadge";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [currentTag, setCurrentTag] = useState(null);
+  const [tags, setTags] = useState(null);
 
   const data: Note =
     route.params && route.params.data
@@ -65,6 +68,10 @@ export default function Editor({ route, navigation }) {
     });
     return unsubscribe;
   }, [navigation, note]);
+
+  useEffect(() => {
+    loadTags();
+  }, []);
 
   function createNote(note: Note) {
     db.transaction((tx) =>
@@ -135,6 +142,22 @@ export default function Editor({ route, navigation }) {
     );
   }
 
+  function loadTags() {
+    db.transaction((tx) => {
+      tx.executeSql(
+        queries.get("getAllTags"),
+        null,
+        (txObj, result) => {
+          setTags(result.rows._array);
+        },
+        (txObj, err) => {
+          alert(err.message);
+          return false;
+        }
+      );
+    });
+  }
+
   return (
     <View style={styles.container}>
       <Text style={[styles.date, { color: colors.text }]}>
@@ -154,12 +177,31 @@ export default function Editor({ route, navigation }) {
           })
         }
       />
-      <View
-        style={[styles.picker, { borderColor: colors.notification + "30" }]}
-      >
-        <Pressable style={styles.pickerPressable} onPress={() => alert("tag")}>
-          <Text style={{ color: colors.text }}>Tag</Text>
-          <Feather name="chevron-down" size={16} color={colors.text} />
+      <View>
+        <Pressable style={styles.picker} onPress={() => alert("tag")}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 3,
+              borderWidth: 1,
+              borderStyle: "solid",
+              borderRadius: 20,
+              paddingHorizontal: 6,
+              paddingVertical: 2,
+              borderColor: colors.text + "50",
+            }}
+          >
+            <Text style={{ color: colors.text }}>Tag</Text>
+            <Feather
+              name="chevron-down"
+              size={16}
+              color={colors.text}
+              style={{ marginTop: 3 }}
+            />
+          </View>
+          <TagBadge accent={"primary"} content={"Tag1"} />
         </Pressable>
       </View>
       <TextInput
@@ -278,11 +320,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   picker: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderStyle: "solid",
-  },
-  pickerPressable: {
     paddingVertical: 8,
     paddingHorizontal: 16,
     display: "flex",

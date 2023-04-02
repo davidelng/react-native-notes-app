@@ -69,6 +69,8 @@ queries.set(
   )`
 );
 
+queries.set(`getAllTags`, `SELECT id, name, color FROM tags`);
+
 queries.set(
   `insertTag`,
   `INSERT INTO tags
@@ -79,7 +81,7 @@ queries.set(
 queries.set(
   `updateTag`,
   `UPDATE tags
-    SET (name = ?, color = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")) 
+    SET name = ?, color = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")
     WHERE id = ?`
 );
 

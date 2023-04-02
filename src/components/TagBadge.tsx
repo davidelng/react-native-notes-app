@@ -5,11 +5,13 @@ export default function TagBadge({ accent, content }) {
   const { colors } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: accent + "50" }]}>
-      <View style={[styles.decoration, { backgroundColor: accent }]}></View>
-      <Text style={[styles.text, { color: colors.text, fontSize: 10 }]}>
-        {content}
-      </Text>
+    <View
+      style={[styles.container, { backgroundColor: colors[accent] + "50" }]}
+    >
+      <View
+        style={[styles.decoration, { backgroundColor: colors[accent] }]}
+      ></View>
+      <Text style={[styles.text, { color: colors.text }]}>{content}</Text>
     </View>
   );
 }
@@ -22,6 +24,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 5,
     paddingVertical: 1,
+    // paddingHorizontal: 6,
+    // paddingVertical: 2,
     gap: 3,
   },
   decoration: {
@@ -33,6 +37,6 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 6,
     // textTransform: "uppercase",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 10,
   },
 });
