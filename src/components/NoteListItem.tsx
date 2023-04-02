@@ -20,7 +20,9 @@ export default function NoteListItem({ navigation, data, onPress }) {
       <View style={[styles.container, { borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
         <Text style={[styles.content, { color: colors.text }]}>
-          {data.content}
+          {data.content.length > 120
+            ? data.content.slice(0, 120) + "..."
+            : data.content}
         </Text>
         <View style={styles.badgeContainer}>
           {data.tag && <TagBadge accent={colors.primary} content={data.tag} />}

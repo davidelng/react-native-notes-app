@@ -142,7 +142,7 @@ export default function Editor({ route, navigation }) {
           styles.title,
           { borderBottomColor: colors.border, color: colors.text },
         ]}
-        placeholder="Title"
+        placeholder="Titolo"
         placeholderTextColor={colors.text}
         value={note.title}
         onChangeText={(text) =>
@@ -202,7 +202,15 @@ export default function Editor({ route, navigation }) {
               <AntDesign name="warning" size={24} color="#8b0000" />
             </View>
             <Text style={[styles.modalText, { color: colors.text }]}>
-              Procedere con l'eliminazione? L'azione è irreversibile
+              Procedere con l'eliminazione?
+            </Text>
+            <Text
+              style={[
+                styles.modalText,
+                { color: colors.text, marginBottom: 20 },
+              ]}
+            >
+              L'azione è irreversibile
             </Text>
             <View
               style={{
@@ -279,7 +287,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    marginBottom: 15,
+    // marginBottom: 15,
     textAlign: "center",
+    fontSize: 16,
   },
 });
