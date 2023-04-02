@@ -15,11 +15,13 @@ import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
 import { Note } from "../../types";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import TagBadge from "../components/TagBadge";
+import { Tag } from "../../types";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [currentTag, setCurrentTag] = useState(null);
+  const [tagModalVisible, setTagModalVisible] = useState(false);
+  // const [currentTag, setCurrentTag] = useState(null);
   const [tags, setTags] = useState(null);
 
   const data: Note =
@@ -33,6 +35,8 @@ export default function Editor({ route, navigation }) {
           title: "",
           content: "",
           tag: null,
+          tagColor: null,
+          tagId: null,
           timestamp: getDateForCreation(),
           pinned: 0,
         };
@@ -42,6 +46,8 @@ export default function Editor({ route, navigation }) {
     title: data.title,
     content: data.content,
     tag: data.tag,
+    tagId: data.tagId,
+    tagColor: data.tagColor,
     timestamp: data.timestamp,
     pinned: data.pinned,
   });
@@ -71,13 +77,13 @@ export default function Editor({ route, navigation }) {
 
   useEffect(() => {
     loadTags();
-  }, []);
+  }, [navigation]);
 
   function createNote(note: Note) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("insertNote"),
-        [note.title, note.content, 0, null],
+        [note.title, note.content, 0, note.tagId],
         (txObj, result) => {
           // alert("Nota aggiunta");
           return true;
@@ -94,7 +100,7 @@ export default function Editor({ route, navigation }) {
     db.transaction((tx) =>
       tx.executeSql(
         queries.get("updateNote"),
-        [note.title, note.content, 0, 1, note.id],
+        [note.title, note.content, 0, note.tagId, note.id],
         (txObj, result) => {
           // alert("Nota modificata");
           return true;
@@ -111,7 +117,8 @@ export default function Editor({ route, navigation }) {
     return (
       currentNote.title !== "" &&
       (currentNote.title !== initialData.title ||
-        currentNote.content !== initialData.content)
+        currentNote.content !== initialData.content ||
+        currentNote.tag !== initialData.tag)
     );
   }
 
@@ -158,6 +165,20 @@ export default function Editor({ route, navigation }) {
     });
   }
 
+  function selectTag(tag: Tag | null) {
+    // setCurrentTag(tag);
+    if (tag !== null) {
+      setNote((prev) => {
+        return { ...prev, tagId: tag.id, tag: tag.name, tagColor: tag.color };
+      });
+    } else {
+      setNote((prev) => {
+        return { ...prev, tagId: null, tag: null, tagColor: null };
+      });
+    }
+    setTagModalVisible(false);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={[styles.date, { color: colors.text }]}>
@@ -178,7 +199,10 @@ export default function Editor({ route, navigation }) {
         }
       />
       <View>
-        <Pressable style={styles.picker} onPress={() => alert("tag")}>
+        <Pressable
+          style={styles.picker}
+          onPress={() => setTagModalVisible(true)}
+        >
           <View
             style={{
               display: "flex",
@@ -201,7 +225,7 @@ export default function Editor({ route, navigation }) {
               style={{ marginTop: 3 }}
             />
           </View>
-          <TagBadge accent={"primary"} content={"Tag1"} />
+          {note.tag && <TagBadge accent={note.tagColor} content={note.tag} />}
         </Pressable>
       </View>
       <TextInput
@@ -216,12 +240,6 @@ export default function Editor({ route, navigation }) {
           })
         }
       />
-
-      {/* SAVE BUTTON
-      <View style={{ margin: 20 }}>
-        <Button title="Salva" color={colors.primary} onPress={manageNote} />
-      </View> 
-      */}
 
       {/* DELETE MODAL */}
       <Modal
@@ -296,6 +314,58 @@ export default function Editor({ route, navigation }) {
         </View>
       </Modal>
       {/* DELETE MODAL */}
+      {/* TAG MODAL */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={tagModalVisible}
+        onRequestClose={() => {
+          setTagModalVisible(!tagModalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <Pressable
+            onPress={() => setTagModalVisible(false)}
+            style={{ flex: 1 }}
+          />
+          <View
+            style={[
+              styles.modalView,
+              { backgroundColor: colors.backgroundLighter, minHeight: "70%" },
+            ]}
+          >
+            <Pressable
+              onPress={() => selectTag(null)}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+              }}
+            >
+              <Text style={{ color: colors.text, marginBottom: 16 }}>
+                Nessuno
+              </Text>
+            </Pressable>
+            {tags &&
+              tags.map((tag: Tag) => {
+                return (
+                  <Pressable
+                    key={tag.id}
+                    onPress={() => selectTag(tag)}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                    }}
+                  >
+                    <TagBadge accent={tag.color} content={tag.name} />
+                  </Pressable>
+                );
+              })}
+          </View>
+        </View>
+      </Modal>
+      {/* TAG MODAL */}
     </View>
   );
 }

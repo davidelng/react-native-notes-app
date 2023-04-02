@@ -25,7 +25,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
             : data.content}
         </Text>
         <View style={styles.badgeContainer}>
-          {data.tag && <TagBadge accent={data.tag_color} content={data.tag} />}
+          {data.tag && <TagBadge accent={data.tagColor} content={data.tag} />}
           <Text
             style={[
               styles.date,

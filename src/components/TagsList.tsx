@@ -1,39 +1,41 @@
 import { StyleSheet, View, FlatList, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import * as Db from "../db/Db";
+import { queries } from "../db/queries";
+import { useEffect, useState } from "react";
+import TagBadge from "./TagBadge";
 
-const mock = [
-  {
-    id: 1,
-    label: "dev",
-    color: "#427DDE",
-  },
-  {
-    id: 2,
-    label: "life",
-    color: "#84CC16",
-  },
-  {
-    id: 3,
-    label: "stuff",
-    color: "#FF6347",
-  },
-];
-
-export default function TagsList() {
+export default function TagsList({ navigation }) {
   const { colors } = useTheme();
+  const [tags, setTags] = useState(null);
+
+  const db = Db.getConnection("notes.sqlite");
+
+  useEffect(() => {
+    loadTags();
+  }, [navigation]);
+
+  function loadTags() {
+    db.transaction((tx) => {
+      tx.executeSql(
+        queries.get("getAllTags"),
+        null,
+        (txObj, result) => {
+          setTags(result.rows._array);
+        },
+        (txObj, err) => {
+          alert(err.message);
+          return false;
+        }
+      );
+    });
+  }
 
   const renderTag = ({ item }) => {
     return (
       <View style={styles.badgeContainer}>
-        <Text
-          style={[
-            styles.badge,
-            { color: item.color, backgroundColor: item.color + "50" },
-          ]}
-        >
-          {item.label}
-        </Text>
+        <TagBadge accent={item.color} content={item.name} />
         <Feather
           name="chevron-right"
           size={18}
@@ -52,12 +54,14 @@ export default function TagsList() {
         <Text style={{ color: colors.text, marginRight: "auto" }}>Tags</Text>
         <Feather name="plus" size={18} style={{ color: colors.text + "80" }} />
       </View>
-      <FlatList
-        data={mock}
-        renderItem={renderTag}
-        keyExtractor={(item) => item.id}
-        // extraData={}
-      />
+      {tags && (
+        <FlatList
+          data={tags}
+          renderItem={renderTag}
+          keyExtractor={(item) => item.id}
+          // extraData={}
+        />
+      )}
     </View>
   );
 }

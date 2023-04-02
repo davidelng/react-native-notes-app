@@ -13,7 +13,7 @@ export default function DrawerMenu(props) {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       <DrawerItemList {...props} />
-      {/* <TagsList /> */}
+      <TagsList navigation={props.navigation} />
       {/* <DrawerItem
         label="Impostazioni"
         onPress={() => alert("Impostazioni")}

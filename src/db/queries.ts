@@ -19,7 +19,7 @@ queries.set(
   `getAllNotes`,
   `SELECT 
     n.id, n.title, n.content, n.pinned, n.date_upd as timestamp, 
-    t.name as tag, t.color as tag_color 
+    t.name as tag, t.color as tagColor, t.id as tagId  
     FROM notes n 
     LEFT JOIN tags t ON n.tag = t.id
     ORDER BY timestamp`
@@ -29,7 +29,7 @@ queries.set(
   `getNotesByTag`,
   `SELECT 
     n.id, n.title, n.content, n.pinned, n.date_upd as timestamp, 
-    t.name as tag, t.color as tag_color 
+    t.name as tag, t.color as tagColor, t.id as tagId
     FROM notes n 
     LEFT JOIN tags t ON n.tag = t.id
     WHERE tag = ?
