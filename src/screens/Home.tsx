@@ -12,6 +12,7 @@ export default function Home({ navigation }) {
   const [notes, setNotes] = useState([]);
   const [query, setQuery] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     navigation.setOptions({
@@ -31,15 +32,18 @@ export default function Home({ navigation }) {
   }, [navigation]);
 
   function loadData() {
+    setIsFetching(true);
     db.transaction((tx) => {
       tx.executeSql(
         queries.get("getAllNotes"),
         null,
         (txObj, result) => {
           setNotes(result.rows._array);
+          setIsFetching(false);
         },
         (txObj, err) => {
           alert(err.message);
+          setIsFetching(false);
           return false;
         }
       );
@@ -94,6 +98,8 @@ export default function Home({ navigation }) {
         keyExtractor={(item) => item.id}
         // extraData={} // set this to re-render on a state change
         style={{ flex: 1 }}
+        refreshing={isFetching}
+        onRefresh={loadData}
       />
       <NewNoteButton navigation={navigation} />
     </View>

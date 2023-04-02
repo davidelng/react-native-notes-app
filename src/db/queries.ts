@@ -52,6 +52,10 @@ queries.set(
 
 queries.set(`deleteNote`, `DELETE FROM notes WHERE id = ?`);
 
+queries.set(`pinNote`, `UPDATE notes SET pinned = 1 WHERE id = ?`);
+
+queries.set(`unpinNote`, `UPDATE notes SET pinned = 0 WHERE id = ?`);
+
 // TAGS
 
 queries.set(

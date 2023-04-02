@@ -3,7 +3,7 @@ import { ExtendedTheme } from "@react-navigation/native";
 export const DarkDefault: ExtendedTheme = {
   dark: true,
   colors: {
-    primary: "#427DDE",
+    primary: "#eab308",
     background: "#000000",
     backgroundLighter: "#181818",
     card: "#000000",
@@ -34,17 +34,3 @@ export const LightDefault: ExtendedTheme = {
 // export const RosePine: ExtendedTheme = {}
 // export const Gruvbox: ExtendedTheme = {}
 // export const Nord: ExtendedTheme = {}
-
-// export const Slate: ExtendedTheme = {
-//   dark: true,
-//   colors: {
-//     primary: "#0891b2",
-//     background: "#111827",
-//     backgroundLighter: "#111827",
-//     card: "#111827",
-//     text: "#d1d5db",
-//     border: "#1f2937",
-//     notification: "#6b7280",
-//     button: "#d1d5db",
-//   },
-// };
