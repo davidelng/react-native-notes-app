@@ -356,6 +356,7 @@ export default function Editor({ route, navigation }) {
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "flex-start",
+                      marginBottom: 16,
                     }}
                   >
                     <TagBadge accent={tag.color} content={tag.name} />

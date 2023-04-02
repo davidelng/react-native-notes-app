@@ -72,15 +72,15 @@ export default function Home({ navigation }) {
         <View
           style={{
             display: "flex",
-            gap: 10,
+            gap: 16,
             flexDirection: "row",
             alignItems: "center",
+            paddingHorizontal: 16,
           }}
         >
           <View
             style={{
               padding: 10,
-              margin: 10,
               borderRadius: 4,
               backgroundColor: "#303030",
               display: "flex",
@@ -103,7 +103,6 @@ export default function Home({ navigation }) {
             />
           </View>
           <Pressable
-            style={{ paddingRight: 16 }}
             onPress={() => {
               // filteredNotes.reverse();
               // setNotes((prev) => prev.reverse());
