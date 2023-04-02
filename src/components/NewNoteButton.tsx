@@ -1,6 +1,7 @@
-import { StyleSheet, Pressable, useColorScheme } from "react-native";
+import { StyleSheet, Pressable, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import { color } from "react-native-reanimated";
 
 export default function NewNoteButton({ navigation }) {
   const { colors } = useTheme();
@@ -12,6 +13,25 @@ export default function NewNoteButton({ navigation }) {
     >
       <Feather name="edit-2" size={24} style={{ color: colors.button }} />
     </Pressable>
+    // <Pressable
+    //   onPress={() => navigation.navigate("Editor")}
+    //   style={[
+    //     styles.button,
+    //     {
+    //       backgroundColor: colors.primary + "50",
+    //       borderWidth: 1,
+    //       borderColor: colors.primary,
+    //       borderStyle: "solid",
+    //       display: "flex",
+    //       flexDirection: "row",
+    //       alignItems: "center",
+    //       gap: 12,
+    //     },
+    //   ]}
+    // >
+    //   <Text style={{ color: colors.text }}>Scrivi</Text>
+    //   <Feather name="edit-2" size={20} style={{ color: colors.button }} />
+    // </Pressable>
   );
 }
 

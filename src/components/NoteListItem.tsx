@@ -19,7 +19,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
     >
       <View style={[styles.container, { borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
-        <Text style={[styles.content, { color: colors.text }]}>
+        <Text style={[styles.content, { color: colors.text + "d2" }]}>
           {data.content.length > 120
             ? data.content.slice(0, 120) + "..."
             : data.content}

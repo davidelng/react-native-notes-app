@@ -13,7 +13,7 @@ import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
 import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
 import { Note } from "../../types";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
@@ -21,7 +21,10 @@ export default function Editor({ route, navigation }) {
 
   const data: Note =
     route.params && route.params.data
-      ? route.params.data
+      ? {
+          ...route.params.data,
+          timestamp: dateFormatter(route.params.data.timestamp),
+        }
       : {
           id: null,
           title: "",
@@ -36,7 +39,7 @@ export default function Editor({ route, navigation }) {
     title: data.title,
     content: data.content,
     tag: data.tag,
-    timestamp: dateFormatter(data.timestamp),
+    timestamp: data.timestamp,
     pinned: data.pinned,
   });
 
@@ -151,6 +154,14 @@ export default function Editor({ route, navigation }) {
           })
         }
       />
+      <View
+        style={[styles.picker, { borderColor: colors.notification + "30" }]}
+      >
+        <Pressable style={styles.pickerPressable} onPress={() => alert("tag")}>
+          <Text style={{ color: colors.text }}>Tag</Text>
+          <Feather name="chevron-down" size={16} color={colors.text} />
+        </Pressable>
+      </View>
       <TextInput
         style={[styles.content, { color: colors.text }]}
         placeholder="..."
@@ -199,7 +210,7 @@ export default function Editor({ route, navigation }) {
                 marginBottom: 16,
               }}
             >
-              <AntDesign name="warning" size={24} color="#8b0000" />
+              <AntDesign name="warning" size={32} color="#8b0000" />
             </View>
             <Text style={[styles.modalText, { color: colors.text }]}>
               Procedere con l'eliminazione?
@@ -265,6 +276,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingHorizontal: 16,
     opacity: 0.7,
+  },
+  picker: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderStyle: "solid",
+  },
+  pickerPressable: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   centeredView: {
     flex: 1,

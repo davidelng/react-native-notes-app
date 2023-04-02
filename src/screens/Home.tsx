@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, TextInput } from "react-native";
+import { StyleSheet, View, FlatList, TextInput, Pressable } from "react-native";
 import NewNoteButton from "../components/NewNoteButton";
 import NoteListItem from "../components/NoteListItem";
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import SearchButton from "../components/SearchButton";
 import FilterButton from "../components/FilterButton";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Home({ navigation }) {
   const db = Db.getConnection("notes.sqlite");
@@ -13,6 +14,7 @@ export default function Home({ navigation }) {
   const [query, setQuery] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [listOrder, setListOrder] = useState("DESC");
 
   useEffect(() => {
     navigation.setOptions({
@@ -35,7 +37,7 @@ export default function Home({ navigation }) {
     setIsFetching(true);
     db.transaction((tx) => {
       tx.executeSql(
-        queries.get("getAllNotes"),
+        queries.get("getAllNotes") + " " + listOrder,
         null,
         (txObj, result) => {
           setNotes(result.rows._array);
@@ -69,27 +71,48 @@ export default function Home({ navigation }) {
       {isFiltering && (
         <View
           style={{
-            padding: 10,
-            margin: 10,
-            borderRadius: 4,
-            backgroundColor: "#303030",
             display: "flex",
             gap: 10,
             flexDirection: "row",
+            alignItems: "center",
           }}
         >
-          <SearchButton />
-          <TextInput
+          <View
             style={{
-              backgroundColor: "transparent",
-              color: "#fff",
+              padding: 10,
+              margin: 10,
+              borderRadius: 4,
+              backgroundColor: "#303030",
+              display: "flex",
+              gap: 10,
+              flexDirection: "row",
               flex: 1,
             }}
-            placeholder="Search"
-            placeholderTextColor="#ffffff50"
-            value={query}
-            onChangeText={(text) => setQuery(text)}
-          />
+          >
+            <SearchButton />
+            <TextInput
+              style={{
+                backgroundColor: "transparent",
+                color: "#fff",
+                flex: 1,
+              }}
+              placeholder="Search"
+              placeholderTextColor="#ffffff50"
+              value={query}
+              onChangeText={(text) => setQuery(text)}
+            />
+          </View>
+          <Pressable
+            style={{ paddingRight: 16 }}
+            onPress={() => {
+              // filteredNotes.reverse();
+              // setNotes((prev) => prev.reverse());
+              setListOrder((prev) => (prev === "DESC" ? "ASC" : "DESC"));
+              loadData();
+            }}
+          >
+            <Ionicons name="swap-vertical" size={24} color="#fff" />
+          </Pressable>
         </View>
       )}
       <FlatList

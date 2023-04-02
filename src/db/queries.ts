@@ -22,7 +22,7 @@ queries.set(
     t.name as tag, t.color as tag_color 
     FROM notes n 
     LEFT JOIN tags t ON n.tag = t.id
-    ORDER BY timestamp DESC`
+    ORDER BY timestamp`
 );
 
 queries.set(
@@ -32,7 +32,7 @@ queries.set(
     t.name as tag, t.color as tag_color 
     FROM notes n 
     LEFT JOIN tags t ON n.tag = t.id
-    WHERE tag = (?)
+    WHERE tag = ?
     ORDER BY timestamp DESC`
 );
 

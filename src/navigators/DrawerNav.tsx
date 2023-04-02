@@ -28,7 +28,7 @@ export default function DrawerNav() {
       drawerContent={DrawerMenu}
     >
       <Drawer.Screen
-        name="Note"
+        name="Tutte le note"
         component={Home}
         options={{
           headerTitle: "Note",
