@@ -1,12 +1,37 @@
-import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Button,
+} from "react-native";
+import { useState, useEffect } from "react";
 import { useTheme } from "@react-navigation/native";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import { updateApiKey } from "../lib/openai";
 
 export default function Settings({ navigation }) {
   const { colors } = useTheme();
+  const [openaiKey, setOpenaiKey] = useState("");
   const db = Db.getConnection();
+
+  useEffect(() => {
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("getConf"),
+        ["OPENAI_API_KEY"],
+        (tx, res) => {
+          setOpenaiKey(res.rows.item(0).value);
+        },
+        (tx, err) => {
+          return false;
+        }
+      )
+    );
+  }, [navigation]);
 
   return (
     <ScrollView style={styles.container}>
@@ -42,18 +67,24 @@ export default function Settings({ navigation }) {
         <Text style={{ color: colors.text, marginBottom: 10 }}>
           Chiave OpenAI
         </Text>
-        <TextInput
-          onChangeText={(text) => {}}
-          placeholder="La tua chiave API"
-          placeholderTextColor={colors.text + "99"}
-          style={{
-            borderBottomWidth: 1,
-            borderStyle: "solid",
-            borderColor: colors.text + "50",
-            // borderRadius: 8,
-            padding: 10,
-          }}
-        />
+        <View>
+          <TextInput
+            value={openaiKey}
+            onChangeText={(text) => setOpenaiKey(text)}
+            placeholder="La tua chiave API"
+            placeholderTextColor={colors.text + "99"}
+            style={{
+              borderBottomWidth: 1,
+              borderStyle: "solid",
+              borderColor: colors.text + "50",
+              // borderRadius: 8,
+              padding: 10,
+              color: colors.text,
+              marginBottom: 10,
+            }}
+          />
+          <Button title="salva" onPress={() => updateApiKey(openaiKey)} />
+        </View>
       </View>
       <View style={styles.section}>
         <View

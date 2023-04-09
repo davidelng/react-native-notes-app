@@ -3,28 +3,40 @@ import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import { AIPrompt } from "../../types";
 
-function getApiKey() {
-  let key = Db.getConnection().transaction((tx) =>
+const db = Db.getConnection();
+
+export function updateApiKey(value: string) {
+  db.transaction((tx) =>
     tx.executeSql(
-      queries.get("getConf"),
-      ["OPENAI_API_KEY"],
+      queries.get("upsertConf"),
+      ["OPENAI_API_KEY", value],
       (tx, res) => {
-        return res.rows.item(0);
+        return true;
       },
       (tx, err) => {
         return false;
       }
     )
   );
-  return key;
 }
 
-// alert(JSON.stringify(getApiKey()));
+// db.transaction((tx) =>
+//   tx.executeSql(
+//     queries.get("getConf"),
+//     ["OPENAI_API_KEY"],
+//     (tx, res) => {
+//       confObj.apiKey = res.rows.item(0).value;
+//     },
+//     (tx, err) => {
+//       return false;
+//     }
+//   )
+// );
 
-const configuration = new Configuration({
-  apiKey: "",
-});
+const configuration = new Configuration({ apiKey: "" });
 const openai = new OpenAIApi(configuration);
+
+alert(JSON.stringify(configuration));
 
 export async function generateCompletion(
   prompt: string,

@@ -10,8 +10,8 @@ queries.set(
     content TEXT NULL, 
     tag INTEGER NULL, 
     pinned INTEGER DEFAULT 0 CHECK (pinned IN (0, 1)), 
-    date_add TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL, 
-    date_upd TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL
+    date_add TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL, 
+    date_upd TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL
   )`
 );
 
@@ -40,13 +40,13 @@ queries.set(
   `insertNote`,
   `INSERT INTO notes
     (title, content, pinned, date_upd, tag) 
-    VALUES (?, ?, ?, datetime(CURRENT_TIMESTAMP, "localtime"), ?)`
+    VALUES (?, ?, ?, datetime(CURRENT_TIMESTAMP, 'localtime'), ?)`
 );
 
 queries.set(
   `updateNote`,
   `UPDATE notes
-    SET title = ?, content = ?, pinned = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime"), tag = ?
+    SET title = ?, content = ?, pinned = ?, date_upd = datetime(CURRENT_TIMESTAMP, 'localtime'), tag = ?
     WHERE id = ?`
 );
 
@@ -64,8 +64,8 @@ queries.set(
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
     name TEXT NOT NULL, 
     color TEXT NOT NULL, 
-    date_add TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL, 
-    date_upd TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL
+    date_add TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL, 
+    date_upd TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL
   )`
 );
 
@@ -81,7 +81,7 @@ queries.set(
 queries.set(
   `updateTag`,
   `UPDATE tags
-    SET name = ?, color = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")
+    SET name = ?, color = ?, date_upd = datetime(CURRENT_TIMESTAMP, 'localtime')
     WHERE id = ?`
 );
 
@@ -93,10 +93,10 @@ queries.set(
   `createTableConfiguration`,
   `CREATE TABLE IF NOT EXISTS configuration (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    key TEXT NOT NULL, 
+    key TEXT NOT NULL UNIQUE, 
     value TEXT NOT NULL, 
-    date_add TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL, 
-    date_upd TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL
+    date_add TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL, 
+    date_upd TEXT DEFAULT (datetime(CURRENT_TIMESTAMP, 'localtime')) NOT NULL
   )`
 );
 
@@ -114,8 +114,16 @@ queries.set(
 queries.set(
   `updateConf`,
   `UPDATE configuration
-    SET value = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")
+    SET value = ?, date_upd = datetime(CURRENT_TIMESTAMP, 'localtime')
     WHERE key = ?`
+);
+
+queries.set(
+  `upsertConf`,
+  `INSERT INTO configuration (key, value)
+    VALUES (?1, ?2) 
+    ON CONFLICT (key) 
+    DO UPDATE SET value=?2;`
 );
 
 queries.set(`deleteCONF`, `DELETE FROM configuration  WHERE key = ?`);
