@@ -6,12 +6,13 @@ import {
   Pressable,
   Modal,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import TagBadge from "./TagBadge";
 
 export default function TagsList({ navigation }) {
@@ -19,6 +20,7 @@ export default function TagsList({ navigation }) {
   const [tags, setTags] = useState(null);
   const [tagModalVisible, setTagModalVisible] = useState(false);
   const [newTag, setNewTag] = useState({ name: "", color: "" });
+  const newTagRef = useRef(null);
 
   const tagColors = ["red", "orange", "yellow", "green", "blue", "purple"];
 
@@ -78,22 +80,34 @@ export default function TagsList({ navigation }) {
   // };
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: colors.backgroundLighter }]}
+    <ScrollView
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <View style={styles.header}>
-        <Feather name="tag" size={20} style={{ color: colors.text + "80" }} />
-        <Text style={{ color: colors.text + "80", marginRight: "auto" }}>
-          Tags
-        </Text>
-        <Pressable onPress={() => setTagModalVisible(true)}>
-          <Feather
-            name="plus"
-            size={18}
-            style={{ color: colors.text + "80" }}
-          />
-        </Pressable>
-      </View>
+      <Pressable
+        onPress={() => setTagModalVisible(true)}
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 10,
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: 10,
+            alignItems: "center",
+            flex: 1,
+          }}
+        >
+          <Feather name="tag" size={20} style={{ color: colors.text + "80" }} />
+          <Text style={{ color: colors.text + "80" }}>Nuovo</Text>
+        </View>
+        <Feather name="plus" size={18} style={{ color: colors.text + "80" }} />
+      </Pressable>
       {/* {tags && (
         <FlatList
           data={tags}
@@ -130,14 +144,21 @@ export default function TagsList({ navigation }) {
           setNewTag({ name: "", color: "" });
           setTagModalVisible(!tagModalVisible);
         }}
+        onShow={() => setTimeout(() => newTagRef.current.focus(), 100)}
       >
         <View style={styles.centeredView}>
           {/* <Pressable
             onPress={() => setTagModalVisible(false)}
             style={{ flex: 1 }}
           /> */}
-          <View style={[styles.modalView, { backgroundColor: "#303030" }]}>
+          <View
+            style={[
+              styles.modalView,
+              { backgroundColor: colors.backgroundLighter },
+            ]}
+          >
             <TextInput
+              ref={newTagRef}
               style={{
                 color: colors.text,
                 paddingHorizontal: 16,
@@ -147,6 +168,7 @@ export default function TagsList({ navigation }) {
                 borderRadius: 8,
                 // borderStyle: "solid",
                 // borderWidth: 1,
+                marginBottom: 16,
               }}
               placeholder="Nome del nuovo tag"
               placeholderTextColor={colors.text + "80"}
@@ -162,7 +184,7 @@ export default function TagsList({ navigation }) {
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginVertical: 16,
+                // marginVertical: 16,
               }}
             >
               {tagColors.map((color) => {
@@ -211,18 +233,38 @@ export default function TagsList({ navigation }) {
                   setNewTag({ name: "", color: "" });
                   setTagModalVisible(false);
                 }}
+                style={[styles.button, { borderColor: colors.primary }]}
               >
-                <Text style={{ color: colors.text }}>Annulla</Text>
+                <Text
+                  style={{
+                    color: colors.text,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Annulla
+                </Text>
               </Pressable>
-              <Pressable onPress={addNewTag}>
-                <Text style={{ color: colors.text }}>Salva</Text>
+              <Pressable
+                onPress={addNewTag}
+                style={[styles.button, { backgroundColor: colors.primary }]}
+              >
+                <Text
+                  style={{
+                    color: colors.text,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Salva
+                </Text>
               </Pressable>
             </View>
           </View>
         </View>
       </Modal>
       {/* NEW TAG MODAL */}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -267,8 +309,15 @@ const styles = StyleSheet.create({
   modalView: {
     // borderTopLeftRadius: 20,
     // borderTopRightRadius: 20,
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: 10,
+    padding: 16,
     width: "100%",
+  },
+  button: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: "solid",
   },
 });

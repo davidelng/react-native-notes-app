@@ -8,6 +8,7 @@ Todo for v1:
 - fix order by
 - pin notes
 - add settings at least for api key
+- huge refactor
 
 Extra:
 

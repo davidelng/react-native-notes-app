@@ -1,5 +1,4 @@
 import { StyleSheet, View, FlatList, TextInput, Pressable } from "react-native";
-import NewNoteButton from "../components/NewNoteButton";
 import NoteListItem from "../components/NoteListItem";
 import { useEffect, useState } from "react";
 import * as Db from "../db/Db";
@@ -7,17 +6,37 @@ import { queries } from "../db/queries";
 import SearchButton from "../components/SearchButton";
 import FilterButton from "../components/FilterButton";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 
 export default function Home({ route, navigation }) {
   const db = Db.getConnection();
   const [notes, setNotes] = useState([]);
   const [query, setQuery] = useState("");
-  const [isFiltering, setIsFiltering] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
   const [listOrder, setListOrder] = useState("DESC");
+
+  const { colors } = useTheme();
 
   const filter =
     route.params && route.params.filter ? route.params.filter : null;
+
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <FilterButton
+  //         onPress={() => {
+  //           setIsFiltering((prev) => !prev);
+  //         }}
+  //       />
+  //     ),
+  //   });
+
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     loadData(filter);
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -30,11 +49,12 @@ export default function Home({ route, navigation }) {
       ),
     });
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      loadData(filter);
-    });
-    return unsubscribe;
-  }, [navigation]);
+    loadData(filter);
+  }, []);
+
+  useEffect(() => {
+    loadData(filter);
+  }, [listOrder]);
 
   function loadData(filter: number | null) {
     // let query = "";
@@ -92,17 +112,19 @@ export default function Home({ route, navigation }) {
             flexDirection: "row",
             alignItems: "center",
             paddingHorizontal: 16,
+            paddingBottom: 16,
           }}
         >
           <View
             style={{
               paddingHorizontal: 10,
               paddingVertical: 8,
-              borderRadius: 8,
-              backgroundColor: "#303030",
+              borderRadius: 50,
+              backgroundColor: colors.backgroundLighter,
               display: "flex",
               gap: 10,
               flexDirection: "row",
+              alignItems: "center",
               flex: 1,
             }}
           >
@@ -110,24 +132,23 @@ export default function Home({ route, navigation }) {
             <TextInput
               style={{
                 backgroundColor: "transparent",
-                color: "#fff",
+                color: colors.text,
                 flex: 1,
               }}
-              placeholder="Search"
-              placeholderTextColor="#ffffff50"
+              placeholder="Cerca"
+              placeholderTextColor={colors.primary + "80"}
+              inputMode="search"
               value={query}
               onChangeText={(text) => setQuery(text)}
             />
           </View>
           <Pressable
             onPress={() => {
-              // filteredNotes.reverse();
-              // setNotes((prev) => prev.reverse());
               setListOrder((prev) => (prev === "DESC" ? "ASC" : "DESC"));
               loadData(filter);
             }}
           >
-            <Ionicons name="swap-vertical" size={24} color="#fff" />
+            <Ionicons name="swap-vertical" size={24} color={colors.text} />
           </Pressable>
         </View>
       )}
@@ -140,7 +161,6 @@ export default function Home({ route, navigation }) {
         refreshing={isFetching}
         onRefresh={() => loadData(filter)}
       />
-      <NewNoteButton navigation={navigation} />
     </View>
   );
 }

@@ -3,7 +3,7 @@ import { useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { DarkDefault, LightDefault } from "./src/themes/themes";
-import StackNav from "./src/navigators/StackNav";
+import TabNav from "./src/navigators/BottomNav";
 import "react-native-url-polyfill/auto";
 import * as Db from "./src/db/Db";
 import { queries } from "./src/db/queries";
@@ -23,7 +23,7 @@ export default function App() {
 
   return (
     <NavigationContainer theme={theme}>
-      <StackNav />
+      <TabNav />
       <StatusBar style="auto" />
     </NavigationContainer>
   );

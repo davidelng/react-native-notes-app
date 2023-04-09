@@ -36,8 +36,6 @@ export function updateApiKey(value: string) {
 const configuration = new Configuration({ apiKey: "" });
 const openai = new OpenAIApi(configuration);
 
-alert(JSON.stringify(configuration));
-
 export async function generateCompletion(
   prompt: string,
   temperature = 0,

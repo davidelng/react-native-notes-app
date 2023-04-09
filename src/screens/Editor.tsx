@@ -35,22 +35,25 @@ export default function Editor({ route, navigation }) {
   const [AILoading, setAILoading] = useState(false);
   const AITextRef = useRef(null);
 
-  const data: Note =
-    route.params && route.params.data
-      ? {
-          ...route.params.data,
-          timestamp: dateFormatter(route.params.data.timestamp),
-        }
-      : {
-          id: null,
-          title: "",
-          content: "",
-          tag: null,
-          tagColor: null,
-          tagId: null,
-          timestamp: getDateForCreation(),
-          pinned: 0,
-        };
+  let data: Note;
+  if (route.params && route.params.data) {
+    data = {
+      ...route.params.data,
+      timestamp: dateFormatter(route.params.data.timestamp),
+    };
+    delete route.params.data;
+  } else {
+    data = {
+      id: null,
+      title: "",
+      content: "",
+      tag: null,
+      tagColor: null,
+      tagId: null,
+      timestamp: getDateForCreation(),
+      pinned: 0,
+    };
+  }
 
   const [note, setNote] = useState({
     id: data.id,
@@ -74,6 +77,7 @@ export default function Editor({ route, navigation }) {
             gap: 16,
             flexDirection: "row",
             alignItems: "center",
+            marginRight: 16,
           }}
         >
           <AIButton onPress={() => setAIModalVisible(true)} />
@@ -106,7 +110,6 @@ export default function Editor({ route, navigation }) {
         queries.get("insertNote"),
         [note.title, note.content, 0, note.tagId],
         (txObj, result) => {
-          // alert("Nota aggiunta");
           return true;
         },
         (txObj, err) => {
@@ -123,7 +126,6 @@ export default function Editor({ route, navigation }) {
         queries.get("updateNote"),
         [note.title, note.content, 0, note.tagId, note.id],
         (txObj, result) => {
-          // alert("Nota modificata");
           return true;
         },
         (txObj, err) => {
@@ -159,7 +161,6 @@ export default function Editor({ route, navigation }) {
         queries.get("deleteNote"),
         [id],
         (txObj, result) => {
-          // alert("Nota eliminata");
           return true;
         },
         (txObj, err) => {
@@ -187,7 +188,6 @@ export default function Editor({ route, navigation }) {
   }
 
   function selectTag(tag: Tag | null) {
-    // setCurrentTag(tag);
     if (tag !== null) {
       setNote((prev) => {
         return { ...prev, tagId: tag.id, tag: tag.name, tagColor: tag.color };
@@ -259,8 +259,8 @@ export default function Editor({ route, navigation }) {
               borderRadius: 20,
               paddingHorizontal: 6,
               paddingVertical: 2,
-              borderColor: colors.text + "50",
-              backgroundColor: colors.text + "50",
+              borderColor: colors.primary + "50",
+              backgroundColor: colors.primary + "50",
             }}
           >
             <Text style={{ color: colors.text }}>Tag</Text>
@@ -421,7 +421,9 @@ export default function Editor({ route, navigation }) {
               styles.modalView,
               {
                 backgroundColor: colors.backgroundLighter,
-                borderRadius: 20,
+                borderRadius: 10,
+                borderTopRightRadius: 10,
+                borderTopLeftRadius: 10,
               },
             ]}
           >

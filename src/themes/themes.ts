@@ -23,9 +23,9 @@ export const DarkDefault: ExtendedTheme = {
 export const LightDefault: ExtendedTheme = {
   dark: false,
   colors: {
-    primary: "#427DDE",
+    primary: "#5e81ac",
     background: "#E0E0E0",
-    backgroundLighter: "#B8B8B8",
+    backgroundLighter: "#d4d4d4",
     card: "#E0E0E0",
     text: "#404040",
     border: "#D6D6D6",
@@ -33,7 +33,7 @@ export const LightDefault: ExtendedTheme = {
     button: "#E0E0E0",
     red: "#DC143C",
     orange: "#F59E0B",
-    yellow: "EAB308",
+    yellow: "#EAB308",
     green: "#84CC16",
     blue: "#427DDE",
     purple: "#7C3AED",

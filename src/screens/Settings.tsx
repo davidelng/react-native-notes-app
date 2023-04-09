@@ -83,7 +83,11 @@ export default function Settings({ navigation }) {
               marginBottom: 10,
             }}
           />
-          <Button title="salva" onPress={() => updateApiKey(openaiKey)} />
+          <Button
+            title="salva"
+            onPress={() => updateApiKey(openaiKey)}
+            color={colors.primary}
+          />
         </View>
       </View>
       <View style={styles.section}>
