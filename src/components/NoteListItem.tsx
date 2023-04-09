@@ -1,6 +1,7 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { dateFormatter } from "../lib/dateUtils";
+import { dateFormatter } from "../lib/dateFormatter";
+import { formatPreview } from "../lib/textFormatter";
 import TagBadge from "./TagBadge";
 
 export default function NoteListItem({ navigation, data, onPress }) {
@@ -10,7 +11,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      onLongPress={() => alert("Long press!")}
+      // onLongPress={() => {}}
       android_ripple={{
         color: colors.backgroundLighter,
         borderless: false,
@@ -20,9 +21,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
       <View style={[styles.container, { borderColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
         <Text style={[styles.content, { color: colors.text + "d2" }]}>
-          {data.content.length > 120
-            ? data.content.slice(0, 120) + "..."
-            : data.content}
+          {formatPreview(data.content)}
         </Text>
         <View style={styles.badgeContainer}>
           {data.tag && <TagBadge accent={data.tagColor} content={data.tag} />}

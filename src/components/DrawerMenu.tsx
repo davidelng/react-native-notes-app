@@ -29,7 +29,11 @@ export default function DrawerMenu(props) {
           NativeNotes
         </Text>
         <Pressable onPress={() => navigation.navigate("Impostazioni")}>
-          <Feather name="settings" size={24} style={{ color: colors.text }} />
+          <Feather
+            name="settings"
+            size={24}
+            style={{ color: colors.text + "80" }}
+          />
         </Pressable>
       </View>
       <View>

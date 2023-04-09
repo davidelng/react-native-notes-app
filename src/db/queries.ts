@@ -88,3 +88,34 @@ queries.set(
 queries.set(`deleteTag`, `DELETE FROM tags  WHERE id = ?`);
 
 // CONFIGURATION
+
+queries.set(
+  `createTableConfiguration`,
+  `CREATE TABLE IF NOT EXISTS configuration (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    key TEXT NOT NULL, 
+    value TEXT NOT NULL, 
+    date_add TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL, 
+    date_upd TEXT DEFAULT datetime(CURRENT_TIMESTAMP, "localtime") NOT NULL
+  )`
+);
+
+queries.set(`getAllConf`, `SELECT id, key, value FROM configuration`);
+
+queries.set(`getConf`, `SELECT value FROM configuration WHERE key = ?`);
+
+queries.set(
+  `insertConf`,
+  `INSERT INTO configuration
+    (key, value) 
+    VALUES (?, ?)`
+);
+
+queries.set(
+  `updateConf`,
+  `UPDATE configuration
+    SET value = ?, date_upd = datetime(CURRENT_TIMESTAMP, "localtime")
+    WHERE key = ?`
+);
+
+queries.set(`deleteCONF`, `DELETE FROM configuration  WHERE key = ?`);

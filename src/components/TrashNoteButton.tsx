@@ -7,7 +7,7 @@ export default function TrashNoteButton({ onPress }) {
 
   return (
     <Pressable onPress={onPress}>
-      <Feather name="trash-2" size={24} style={{ color: colors.text }} />
+      <Feather name="trash" size={24} style={{ color: colors.text }} />
     </Pressable>
   );
 }

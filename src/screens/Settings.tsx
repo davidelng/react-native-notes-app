@@ -1,11 +1,15 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
 import { useTheme } from "@react-navigation/native";
+import * as Db from "../db/Db";
+import { queries } from "../db/queries";
+import { AntDesign, Feather } from "@expo/vector-icons";
 
 export default function Settings({ navigation }) {
   const { colors } = useTheme();
+  const db = Db.getConnection();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={[styles.heading, { color: colors.text + "99" }]}>
           Aspetto
@@ -34,9 +38,38 @@ export default function Settings({ navigation }) {
         <Text style={{ color: colors.text }}>Importa db</Text>
       </View>
       <View style={styles.section}>
-        <Text style={{ color: colors.text }}>GitHub</Text>
+        <Text style={[styles.heading, { color: colors.text + "99" }]}>AI</Text>
+        <Text style={{ color: colors.text, marginBottom: 10 }}>
+          Chiave OpenAI
+        </Text>
+        <TextInput
+          onChangeText={(text) => {}}
+          placeholder="La tua chiave API"
+          placeholderTextColor={colors.text + "99"}
+          style={{
+            borderBottomWidth: 1,
+            borderStyle: "solid",
+            borderColor: colors.text + "50",
+            // borderRadius: 8,
+            padding: 10,
+          }}
+        />
       </View>
-    </View>
+      <View style={styles.section}>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <AntDesign name="github" size={24} color={colors.text} />
+          {/* <Feather name="github" size={24} color={colors.text} /> */}
+          <Text style={{ color: colors.text }}>GitHub</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
 }
 

@@ -1,28 +1,39 @@
 import {
   StyleSheet,
   View,
+  ScrollView,
   Text,
   TextInput,
   Modal,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import TrashNoteButton from "../components/TrashNoteButton";
-import { dateFormatter, getDateForCreation } from "../lib/dateUtils";
+import { dateFormatter, getDateForCreation } from "../lib/dateFormatter";
 import { Note } from "../../types";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import TagBadge from "../components/TagBadge";
 import { Tag } from "../../types";
+import AIButton from "../components/AIButton";
+import { generateCompletion } from "../lib/openai";
+import Slider from "@react-native-community/slider";
+import { AIPrompt } from "../../types";
+
+const emptyAIPrompt: AIPrompt = { prompt: "", temperature: 0, maxTokens: 1000 };
 
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [tagModalVisible, setTagModalVisible] = useState(false);
-  // const [currentTag, setCurrentTag] = useState(null);
+  const [AIModalVisible, setAIModalVisible] = useState(false);
   const [tags, setTags] = useState(null);
+  const [AIPrompt, setAIPrompt] = useState(emptyAIPrompt);
+  const [AILoading, setAILoading] = useState(false);
+  const AITextRef = useRef(null);
 
   const data: Note =
     route.params && route.params.data
@@ -52,20 +63,30 @@ export default function Editor({ route, navigation }) {
     pinned: data.pinned,
   });
 
-  const db = Db.getConnection("notes.sqlite");
+  const db = Db.getConnection();
 
   useEffect(() => {
-    if (note.id !== null) {
-      navigation.setOptions({
-        headerRight: () => (
-          <TrashNoteButton
-            onPress={() => {
-              setDeleteModalVisible(true);
-            }}
-          />
-        ),
-      });
-    }
+    navigation.setOptions({
+      headerRight: () => (
+        <View
+          style={{
+            display: "flex",
+            gap: 16,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <AIButton onPress={() => setAIModalVisible(true)} />
+          {note.id !== null && (
+            <TrashNoteButton
+              onPress={() => {
+                setDeleteModalVisible(true);
+              }}
+            />
+          )}
+        </View>
+      ),
+    });
 
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
       e.preventDefault();
@@ -179,6 +200,30 @@ export default function Editor({ route, navigation }) {
     setTagModalVisible(false);
   }
 
+  async function generateText(prompt: AIPrompt) {
+    const generatedText = await generateCompletion(
+      prompt.prompt,
+      prompt.temperature,
+      prompt.maxTokens
+    );
+    setNote((prev) => {
+      return {
+        ...prev,
+        content: prev.content + "\n\n-- AI Generated\n\n" + generatedText,
+      };
+    });
+  }
+
+  async function handleAIGeneration(prompt: AIPrompt) {
+    setAILoading(true);
+    if (AIPrompt.prompt !== "") {
+      await generateText(prompt);
+      setAIModalVisible(false);
+    }
+    setAIPrompt(emptyAIPrompt);
+    setAILoading(false);
+  }
+
   return (
     <View style={styles.container}>
       <Text style={[styles.date, { color: colors.text }]}>
@@ -215,6 +260,7 @@ export default function Editor({ route, navigation }) {
               paddingHorizontal: 6,
               paddingVertical: 2,
               borderColor: colors.text + "50",
+              backgroundColor: colors.text + "50",
             }}
           >
             <Text style={{ color: colors.text }}>Tag</Text>
@@ -228,18 +274,20 @@ export default function Editor({ route, navigation }) {
           {note.tag && <TagBadge accent={note.tagColor} content={note.tag} />}
         </Pressable>
       </View>
-      <TextInput
-        style={[styles.content, { color: colors.text }]}
-        placeholder="..."
-        placeholderTextColor={colors.notification}
-        multiline
-        value={note.content}
-        onChangeText={(text) =>
-          setNote((prev) => {
-            return { ...prev, content: text };
-          })
-        }
-      />
+      <ScrollView>
+        <TextInput
+          style={[styles.content, { color: colors.text }]}
+          placeholder="..."
+          placeholderTextColor={colors.notification}
+          multiline
+          value={note.content}
+          onChangeText={(text) =>
+            setNote((prev) => {
+              return { ...prev, content: text };
+            })
+          }
+        />
+      </ScrollView>
 
       {/* DELETE MODAL */}
       <Modal
@@ -253,7 +301,7 @@ export default function Editor({ route, navigation }) {
         <View style={styles.centeredView}>
           <Pressable
             onPress={() => setDeleteModalVisible(false)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: "#00000080" }}
           />
           <View
             style={[
@@ -261,59 +309,31 @@ export default function Editor({ route, navigation }) {
               { backgroundColor: colors.backgroundLighter },
             ]}
           >
-            <View
-              style={{
-                margin: "auto",
-                padding: 16,
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 16,
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => {
+                setDeleteModalVisible(!deleteModalVisible);
+                deleteNote(note.id);
+                navigation.navigate("Drawer");
               }}
             >
-              <AntDesign name="warning" size={32} color="#8b0000" />
-            </View>
-            <Text style={[styles.modalText, { color: colors.text }]}>
-              Procedere con l'eliminazione?
-            </Text>
-            <Text
-              style={[
-                styles.modalText,
-                { color: colors.text, marginBottom: 20 },
-              ]}
+              <Feather name="trash" size={24} color="#DC143C" />
+              <Text style={[styles.modalButtonText, { color: "#DC143C" }]}>
+                Elimina definitivamente
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setDeleteModalVisible(!deleteModalVisible)}
             >
-              L'azione è irreversibile
-            </Text>
-            <View
-              style={{
-                display: "flex",
-                gap: 16,
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              <Pressable
-                style={styles.button}
-                onPress={() => setDeleteModalVisible(!deleteModalVisible)}
-              >
-                <Text style={styles.textStyle}>Annulla</Text>
-              </Pressable>
-              <Pressable
-                style={styles.button}
-                onPress={() => {
-                  setDeleteModalVisible(!deleteModalVisible);
-                  deleteNote(note.id);
-                  navigation.navigate("Drawer");
-                }}
-              >
-                <Text style={[styles.textStyle, { color: "#8b0000" }]}>
-                  Cancella
-                </Text>
-              </Pressable>
-            </View>
+              <AntDesign name="close" size={24} color={colors.text} />
+              <Text style={styles.modalButtonText}>Annulla</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
       {/* DELETE MODAL */}
+
       {/* TAG MODAL */}
       <Modal
         animationType="slide"
@@ -326,12 +346,12 @@ export default function Editor({ route, navigation }) {
         <View style={styles.centeredView}>
           <Pressable
             onPress={() => setTagModalVisible(false)}
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: "#00000080" }}
           />
           <View
             style={[
               styles.modalView,
-              { backgroundColor: colors.backgroundLighter, minHeight: "70%" },
+              { backgroundColor: colors.backgroundLighter },
             ]}
           >
             <Pressable
@@ -340,11 +360,13 @@ export default function Editor({ route, navigation }) {
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "flex-start",
+                alignItems: "center",
+                gap: 8,
+                marginBottom: 16,
               }}
             >
-              <Text style={{ color: colors.text, marginBottom: 16 }}>
-                Nessuno
-              </Text>
+              <AntDesign name="close" size={18} color={colors.text} />
+              <Text style={{ color: colors.text }}>Nessuno</Text>
             </Pressable>
             {tags &&
               tags.map((tag: Tag) => {
@@ -367,6 +389,176 @@ export default function Editor({ route, navigation }) {
         </View>
       </Modal>
       {/* TAG MODAL */}
+
+      {/* AI MODAL */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={AIModalVisible}
+        onRequestClose={() => {
+          setAIPrompt(emptyAIPrompt);
+          setAIModalVisible(!AIModalVisible);
+        }}
+        onShow={() => setTimeout(() => AITextRef.current.focus(), 100)}
+      >
+        <View
+          style={[
+            styles.centeredView,
+            {
+              backgroundColor: "#00000080",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 16,
+            },
+          ]}
+        >
+          {/* <Pressable
+            onPress={() => setAIModalVisible(false)}
+            style={{ flex: 1, backgroundColor: "#00000050" }}
+          /> */}
+          <View
+            style={[
+              styles.modalView,
+              {
+                backgroundColor: colors.backgroundLighter,
+                borderRadius: 20,
+              },
+            ]}
+          >
+            {!AILoading ? (
+              <>
+                <TextInput
+                  ref={AITextRef}
+                  style={{
+                    color: colors.text,
+                    padding: 10,
+                    marginBottom: 16,
+                    fontSize: 14,
+                    // backgroundColor: colors.notification + "20",
+                    borderRadius: 8,
+                  }}
+                  placeholder="Chiedi qualcosa all'intelligenza artificiale"
+                  placeholderTextColor={colors.notification}
+                  multiline
+                  value={AIPrompt.prompt}
+                  onChangeText={(text) =>
+                    setAIPrompt((prev) => {
+                      return { ...prev, prompt: text };
+                    })
+                  }
+                />
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 16,
+                    marginBottom: 16,
+                  }}
+                >
+                  <View
+                    style={{
+                      // backgroundColor: colors.notification + "20",
+                      borderRadius: 8,
+                      padding: 10,
+                    }}
+                  >
+                    <Text style={{ color: colors.text }}>
+                      Temperatura: {AIPrompt.temperature}
+                    </Text>
+                    <Slider
+                      style={{ height: 30 }}
+                      minimumValue={0}
+                      maximumValue={1}
+                      step={0.1}
+                      minimumTrackTintColor={colors.primary}
+                      maximumTrackTintColor="#000000"
+                      thumbTintColor={colors.primary}
+                      onValueChange={(val) =>
+                        setAIPrompt((prev) => {
+                          let temp = parseFloat(val.toFixed(1));
+                          temp = temp === 1.0 ? 1 : temp;
+                          return { ...prev, temperature: temp };
+                        })
+                      }
+                    />
+                  </View>
+                  <View
+                    style={{
+                      // backgroundColor: colors.notification + "20",
+                      borderRadius: 8,
+                      padding: 10,
+                    }}
+                  >
+                    <Text style={{ color: colors.text }}>
+                      Max Tokens: {AIPrompt.maxTokens}
+                    </Text>
+                    <Slider
+                      style={{ height: 30 }}
+                      minimumValue={10}
+                      maximumValue={1000}
+                      minimumTrackTintColor={colors.primary}
+                      maximumTrackTintColor="#000000"
+                      thumbTintColor={colors.primary}
+                      onValueChange={(val) =>
+                        setAIPrompt((prev) => {
+                          return { ...prev, maxTokens: Math.floor(val) };
+                        })
+                      }
+                    />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    display: "flex",
+                    gap: 16,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Pressable
+                    style={[
+                      styles.button,
+                      {
+                        borderWidth: 1,
+                        borderColor: colors.primary,
+                        borderRadius: 8,
+                      },
+                    ]}
+                    onPress={() => {
+                      setAIPrompt(emptyAIPrompt);
+                      setAIModalVisible(!AIModalVisible);
+                    }}
+                  >
+                    <Text style={styles.textStyle}>Annulla</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[
+                      styles.button,
+                      {
+                        borderWidth: 1,
+                        borderColor: colors.primary,
+                        borderRadius: 8,
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                    onPress={() => handleAIGeneration(AIPrompt)}
+                  >
+                    <Text style={[styles.textStyle, { color: colors.text }]}>
+                      Genera
+                    </Text>
+                  </Pressable>
+                </View>
+              </>
+            ) : (
+              // <Text style={{ color: colors.text }}>
+              //   Aspetta, sto elaborando..
+              // </Text>
+              <ActivityIndicator size="large" color={colors.primary} />
+            )}
+          </View>
+        </View>
+      </Modal>
+      {/* AI MODAL */}
     </View>
   );
 }
@@ -377,7 +569,7 @@ const styles = StyleSheet.create({
   },
   title: {
     padding: 16,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     fontSize: 20,
   },
   content: {
@@ -400,18 +592,29 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
-    marginTop: 22,
   },
   modalView: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 35,
+    padding: 25,
     width: "100%",
+  },
+  modalButtonText: {
+    color: "white",
+    textAlign: "left",
   },
   button: {
     borderRadius: 4,
     padding: 10,
     flex: 1,
+  },
+  modalButton: {
+    borderRadius: 4,
+    padding: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
   },
   textStyle: {
     color: "white",

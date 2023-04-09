@@ -14,3 +14,9 @@ export type Tag = {
   name: string;
   color: string;
 };
+
+export type AIPrompt = {
+  prompt: string;
+  temperature: number;
+  maxTokens: number;
+};

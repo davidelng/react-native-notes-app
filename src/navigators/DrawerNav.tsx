@@ -43,7 +43,7 @@ export default function DrawerNav() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Impostazioni"
         component={Settings}
         options={{
@@ -54,7 +54,7 @@ export default function DrawerNav() {
             <Feather name="settings" size={24} style={{ color: colors.text }} />
           ),
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }

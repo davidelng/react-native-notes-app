@@ -8,13 +8,16 @@ import SearchButton from "../components/SearchButton";
 import FilterButton from "../components/FilterButton";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Home({ navigation }) {
-  const db = Db.getConnection("notes.sqlite");
+export default function Home({ route, navigation }) {
+  const db = Db.getConnection();
   const [notes, setNotes] = useState([]);
   const [query, setQuery] = useState("");
   const [isFiltering, setIsFiltering] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [listOrder, setListOrder] = useState("DESC");
+
+  const filter =
+    route.params && route.params.filter ? route.params.filter : null;
 
   useEffect(() => {
     navigation.setOptions({
@@ -28,17 +31,30 @@ export default function Home({ navigation }) {
     });
 
     const unsubscribe = navigation.addListener("focus", () => {
-      loadData();
+      loadData(filter);
     });
     return unsubscribe;
   }, [navigation]);
 
-  function loadData() {
+  function loadData(filter: number | null) {
+    // let query = "";
+    // let params = null;
+
+    // if (filter !== null) {
+    //   query = queries.get("getNotesByTag");
+    //   params = [filter];
+    // } else {
+    //   query = queries.get("getAllNotes") + " " + listOrder;
+    // }
+
+    let query = queries.get("getAllNotes") + " " + listOrder;
+    let params = null;
+
     setIsFetching(true);
     db.transaction((tx) => {
       tx.executeSql(
-        queries.get("getAllNotes") + " " + listOrder,
-        null,
+        query,
+        params,
         (txObj, result) => {
           setNotes(result.rows._array);
           setIsFetching(false);
@@ -80,8 +96,9 @@ export default function Home({ navigation }) {
         >
           <View
             style={{
-              padding: 10,
-              borderRadius: 4,
+              paddingHorizontal: 10,
+              paddingVertical: 8,
+              borderRadius: 8,
               backgroundColor: "#303030",
               display: "flex",
               gap: 10,
@@ -107,7 +124,7 @@ export default function Home({ navigation }) {
               // filteredNotes.reverse();
               // setNotes((prev) => prev.reverse());
               setListOrder((prev) => (prev === "DESC" ? "ASC" : "DESC"));
-              loadData();
+              loadData(filter);
             }}
           >
             <Ionicons name="swap-vertical" size={24} color="#fff" />
@@ -121,7 +138,7 @@ export default function Home({ navigation }) {
         // extraData={} // set this to re-render on a state change
         style={{ flex: 1 }}
         refreshing={isFetching}
-        onRefresh={loadData}
+        onRefresh={() => loadData(filter)}
       />
       <NewNoteButton navigation={navigation} />
     </View>
