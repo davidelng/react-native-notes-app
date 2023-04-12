@@ -4,14 +4,31 @@ import { useTheme } from "@react-navigation/native";
 export default function TagBadge({ accent, content }) {
   const { colors } = useTheme();
 
+  // return (
+  //   <View
+  //     style={[styles.container, { backgroundColor: colors[accent] + "50" }]}
+  //   >
+  //     <View
+  //       style={[styles.decoration, { backgroundColor: colors[accent] }]}
+  //     ></View>
+  //     <Text style={[styles.text, { color: colors.text }]}>{content}</Text>
+  //   </View>
+  // );
+
   return (
     <View
-      style={[styles.container, { backgroundColor: colors[accent] + "50" }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors[accent] + "50",
+          // borderColor: colors[accent] + "70",
+          // borderWidth: 1,
+        },
+      ]}
     >
-      <View
-        style={[styles.decoration, { backgroundColor: colors[accent] }]}
-      ></View>
-      <Text style={[styles.text, { color: colors.text }]}>{content}</Text>
+      <Text style={[styles.text, { color: colors[accent], fontWeight: "600" }]}>
+        {content}
+      </Text>
     </View>
   );
 }
