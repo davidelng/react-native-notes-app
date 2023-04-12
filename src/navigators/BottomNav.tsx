@@ -8,18 +8,23 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNav() {
+export default function TabNav({}) {
   return (
     <Tab.Navigator
       initialRouteName="Tutte le note"
       screenOptions={{
-        tabBarShowLabel: false,
-        unmountOnBlur: true,
+        tabBarShowLabel: true,
+        tabBarHideOnKeyboard: true,
+        // unmountOnBlur: true,
       }}
     >
       <Tab.Screen
         name="Tutte le note"
         component={Home}
+        // initialParams={{
+        //   loadData: loadData,
+        //   notes: notes,
+        // }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -28,6 +33,7 @@ export default function TabNav() {
               color={color}
             />
           ),
+          tabBarLabel: "Note",
           // headerTitle: "Native Notes",
         }}
       />
@@ -42,6 +48,7 @@ export default function TabNav() {
               color={color}
             />
           ),
+          tabBarLabel: "Etichette",
         }}
       />
       <Tab.Screen
@@ -56,6 +63,7 @@ export default function TabNav() {
             //   color={color}
             // />
           ),
+          tabBarLabel: "Crea",
         }}
       />
       <Tab.Screen
@@ -65,6 +73,7 @@ export default function TabNav() {
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" size={size} color={color} />
           ),
+          tabBarLabel: "Impostazioni",
         }}
       />
     </Tab.Navigator>

@@ -12,6 +12,7 @@ export default function App() {
   const scheme = useColorScheme();
   const theme = scheme === "dark" ? DarkDefault : LightDefault;
   const db = Db.getConnection();
+  const [notes, setNotes] = useState(null);
 
   useEffect(() => {
     queries.forEach((value, key) => {

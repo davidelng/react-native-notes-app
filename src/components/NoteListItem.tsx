@@ -18,7 +18,7 @@ export default function NoteListItem({ navigation, data, onPress }) {
         foreground: false,
       }}
     >
-      <View style={[styles.container, { borderColor: colors.border }]}>
+      <View style={[styles.container, { borderColor: colors.border + "90" }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
         <Text style={[styles.content, { color: colors.text + "d2" }]}>
           {formatPreview(data.content)}
@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
+    borderStyle: "dashed",
   },
   title: {
     fontSize: 18,

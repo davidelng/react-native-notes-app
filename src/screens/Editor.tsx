@@ -25,6 +25,17 @@ import { AIPrompt } from "../../types";
 
 const emptyAIPrompt: AIPrompt = { prompt: "", temperature: 0, maxTokens: 1000 };
 
+const emptyNote: Note = {
+  id: null,
+  title: "",
+  content: "",
+  tag: null,
+  tagColor: null,
+  tagId: null,
+  timestamp: getDateForCreation(),
+  pinned: 0,
+};
+
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -35,38 +46,37 @@ export default function Editor({ route, navigation }) {
   const [AILoading, setAILoading] = useState(false);
   const AITextRef = useRef(null);
 
-  let data: Note;
-  if (route.params && route.params.data) {
-    data = {
-      ...route.params.data,
-      timestamp: dateFormatter(route.params.data.timestamp),
-    };
-    delete route.params.data;
-  } else {
-    data = {
-      id: null,
-      title: "",
-      content: "",
-      tag: null,
-      tagColor: null,
-      tagId: null,
-      timestamp: getDateForCreation(),
-      pinned: 0,
-    };
-  }
+  const [note, setNote] = useState(emptyNote);
 
-  const [note, setNote] = useState({
-    id: data.id,
-    title: data.title,
-    content: data.content,
-    tag: data.tag,
-    tagId: data.tagId,
-    tagColor: data.tagColor,
-    timestamp: data.timestamp,
-    pinned: data.pinned,
-  });
+  let data: Note;
 
   const db = Db.getConnection();
+
+  useEffect(() => {
+    if (route.params?.data) {
+      data = {
+        ...route.params.data,
+        timestamp: dateFormatter(route.params.data.timestamp),
+      };
+    } else {
+      data = emptyNote;
+    }
+
+    setNote(data);
+
+    const unsubscribe = () => {};
+    return () => unsubscribe();
+  }, [route.params?.data]);
+
+  useEffect(() => {
+    loadTags();
+
+    const unsubscribe = navigation.addListener("tabPress", (e) => {
+      setNote(emptyNote);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -88,21 +98,13 @@ export default function Editor({ route, navigation }) {
               }}
             />
           )}
+          {/* <Pressable onPress={() => {}}>
+            <Feather name="save" size={24} style={{ color: colors.text }} />
+          </Pressable> */}
         </View>
       ),
     });
-
-    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      manageNote();
-      navigation.dispatch(e.data.action);
-    });
-    return unsubscribe;
-  }, [navigation, note]);
-
-  useEffect(() => {
-    loadTags();
-  }, [navigation]);
+  }, [note]);
 
   function createNote(note: Note) {
     db.transaction((tx) =>
@@ -147,11 +149,9 @@ export default function Editor({ route, navigation }) {
 
   function manageNote() {
     if (note.id === null && note.title !== "") {
-      createNote(note);
-      return;
+      return createNote(note);
     } else if (note.id !== null && hasChanges(note, data)) {
-      updateNote(note);
-      return;
+      return updateNote(note);
     }
   }
 
@@ -201,16 +201,29 @@ export default function Editor({ route, navigation }) {
   }
 
   async function generateText(prompt: AIPrompt) {
-    const generatedText = await generateCompletion(
-      prompt.prompt,
-      prompt.temperature,
-      prompt.maxTokens
-    );
-    setNote((prev) => {
-      return {
-        ...prev,
-        content: prev.content + "\n\n-- AI Generated\n\n" + generatedText,
-      };
+    db.transaction((tx) => {
+      tx.executeSql(
+        queries.get("getConf"),
+        ["OPENAI_API_KEY"],
+        async (tx, res) => {
+          const key = res.rows.item(0).value;
+          const generatedText = await generateCompletion(
+            key,
+            prompt.prompt,
+            prompt.temperature,
+            prompt.maxTokens
+          );
+          setNote((prev) => {
+            return {
+              ...prev,
+              content: prev.content + "\n\n-- AI Generated\n\n" + generatedText,
+            };
+          });
+        },
+        (tx, err) => {
+          return false;
+        }
+      );
     });
   }
 
@@ -248,29 +261,31 @@ export default function Editor({ route, navigation }) {
           style={styles.picker}
           onPress={() => setTagModalVisible(true)}
         >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 3,
-              borderWidth: 1,
-              borderStyle: "solid",
-              borderRadius: 20,
-              paddingHorizontal: 6,
-              paddingVertical: 2,
-              borderColor: colors.primary + "50",
-              backgroundColor: colors.primary + "50",
-            }}
-          >
-            <Text style={{ color: colors.text }}>Tag</Text>
-            <Feather
-              name="chevron-down"
-              size={16}
-              color={colors.text}
-              style={{ marginTop: 3 }}
-            />
-          </View>
+          {!note.tag && (
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 3,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderRadius: 20,
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                borderColor: colors.primary + "50",
+                backgroundColor: colors.primary + "50",
+              }}
+            >
+              <Text style={{ color: colors.text }}>Tag</Text>
+              <Feather
+                name="chevron-down"
+                size={16}
+                color={colors.text}
+                style={{ marginTop: 3 }}
+              />
+            </View>
+          )}
           {note.tag && <TagBadge accent={note.tagColor} content={note.tag} />}
         </Pressable>
       </View>
@@ -314,7 +329,7 @@ export default function Editor({ route, navigation }) {
               onPress={() => {
                 setDeleteModalVisible(!deleteModalVisible);
                 deleteNote(note.id);
-                navigation.navigate("Drawer");
+                navigation.jumpTo("Tutte le note");
               }}
             >
               <Feather name="trash" size={24} color="#DC143C" />

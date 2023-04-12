@@ -33,14 +33,31 @@ export function updateApiKey(value: string) {
 //   )
 // );
 
-const configuration = new Configuration({ apiKey: "" });
-const openai = new OpenAIApi(configuration);
+// const configuration = new Configuration({ apiKey: "" });
+// const openai = new OpenAIApi(configuration);
+
+// export async function generateCompletion(
+//   prompt: string,
+//   temperature = 0,
+//   max_tokens = 1000
+// ) {
+//   const completion = await openai.createCompletion({
+//     model: "text-davinci-003",
+//     prompt: prompt,
+//     temperature: temperature,
+//     max_tokens: max_tokens,
+//   });
+//   return completion.data.choices[0].text;
+// }
 
 export async function generateCompletion(
+  apiKey: string,
   prompt: string,
   temperature = 0,
   max_tokens = 1000
 ) {
+  const configuration = new Configuration({ apiKey: apiKey });
+  const openai = new OpenAIApi(configuration);
   const completion = await openai.createCompletion({
     model: "text-davinci-003",
     prompt: prompt,
