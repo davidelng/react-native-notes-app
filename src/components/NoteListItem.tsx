@@ -1,6 +1,8 @@
 import { StyleSheet, View, Pressable, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { dateFormatter } from "../lib/dateUtils";
+import { dateFormatter } from "../lib/dateFormatter";
+import { formatPreview } from "../lib/textFormatter";
+import TagBadge from "./TagBadge";
 
 export default function NoteListItem({ navigation, data, onPress }) {
   const { colors } = useTheme();
@@ -9,32 +11,20 @@ export default function NoteListItem({ navigation, data, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      onLongPress={() => alert("Long press!")}
+      // onLongPress={() => {}}
       android_ripple={{
         color: colors.backgroundLighter,
         borderless: false,
         foreground: false,
       }}
     >
-      <View style={[styles.container, { borderColor: colors.border }]}>
+      <View style={[styles.container, { borderColor: colors.border + "90" }]}>
         <Text style={[styles.title, { color: colors.text }]}>{data.title}</Text>
-        <Text style={[styles.content, { color: colors.text }]}>
-          {data.content}
+        <Text style={[styles.content, { color: colors.text + "d2" }]}>
+          {formatPreview(data.content)}
         </Text>
         <View style={styles.badgeContainer}>
-          {data.tag && (
-            <Text
-              style={[
-                styles.badge,
-                {
-                  color: colors.primary,
-                  backgroundColor: colors.primary + "50",
-                },
-              ]}
-            >
-              {data.tag}
-            </Text>
-          )}
+          {data.tag && <TagBadge accent={data.tagColor} content={data.tag} />}
           <Text
             style={[
               styles.date,
@@ -53,7 +43,8 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
+    borderStyle: "dashed",
   },
   title: {
     fontSize: 18,
@@ -67,13 +58,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
-  },
-  badge: {
-    paddingHorizontal: 6,
-    borderRadius: 2,
-    textTransform: "uppercase",
-    fontWeight: "bold",
-    fontSize: 12,
   },
   date: {
     fontSize: 10,

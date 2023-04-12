@@ -1,16 +1,15 @@
 import { Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 
-export default function FilterButton({ onPress }) {
+export default function AIButton({ onPress }) {
   const { colors } = useTheme();
-
   return (
     <Pressable onPress={onPress}>
-      <Feather
-        name="filter"
+      <MaterialCommunityIcons
+        name="text-recognition"
         size={24}
-        style={{ color: colors.text, marginRight: 16 }}
+        color={colors.text}
       />
     </Pressable>
   );

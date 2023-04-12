@@ -1,45 +1,89 @@
-import { StyleSheet, View, FlatList, TextInput } from "react-native";
-import NewNoteButton from "../components/NewNoteButton";
+import { StyleSheet, View, FlatList, TextInput, Pressable } from "react-native";
 import NoteListItem from "../components/NoteListItem";
 import { useEffect, useState } from "react";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
 import SearchButton from "../components/SearchButton";
-import FilterButton from "../components/FilterButton";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/native";
 
-export default function Home({ navigation }) {
-  const db = Db.getConnection("notes.sqlite");
+export default function Home({ route, navigation }) {
+  const db = Db.getConnection();
   const [notes, setNotes] = useState([]);
   const [query, setQuery] = useState("");
-  const [isFiltering, setIsFiltering] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [listOrder, setListOrder] = useState("DESC");
+
+  const { colors } = useTheme();
+
+  const filter =
+    route.params && route.params.filter ? route.params.filter : null;
+
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <FilterButton
+  //         onPress={() => {
+  //           setIsFiltering((prev) => !prev);
+  //         }}
+  //       />
+  //     ),
+  //   });
+
+  //   const unsubscribe = navigation.addListener("focus", () => {
+  //     loadData(filter);
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <FilterButton
+        <Pressable
+          style={{ marginRight: 16 }}
           onPress={() => {
-            setIsFiltering((prev) => !prev);
+            setListOrder((prev) => (prev === "DESC" ? "ASC" : "DESC"));
+            loadData(filter);
           }}
-        />
+        >
+          <Ionicons name="swap-vertical" size={24} color={colors.text} />
+        </Pressable>
       ),
     });
 
-    const unsubscribe = navigation.addListener("focus", () => {
-      loadData();
-    });
-    return unsubscribe;
-  }, [navigation]);
+    loadData(filter);
+  }, []);
 
-  function loadData() {
+  useEffect(() => {
+    loadData(filter);
+  }, [listOrder]);
+
+  function loadData(filter: number | null) {
+    // let query = "";
+    // let params = null;
+
+    // if (filter !== null) {
+    //   query = queries.get("getNotesByTag");
+    //   params = [filter];
+    // } else {
+    //   query = queries.get("getAllNotes") + " " + listOrder;
+    // }
+
+    let query = queries.get("getAllNotes") + " " + listOrder;
+    let params = null;
+
+    setIsFetching(true);
     db.transaction((tx) => {
       tx.executeSql(
-        queries.get("getAllNotes"),
-        null,
+        query,
+        params,
         (txObj, result) => {
           setNotes(result.rows._array);
+          setIsFetching(false);
         },
         (txObj, err) => {
           alert(err.message);
+          setIsFetching(false);
           return false;
         }
       );
@@ -55,47 +99,60 @@ export default function Home({ navigation }) {
       <NoteListItem
         navigation={navigation}
         data={item}
-        onPress={() => navigation.navigate("Editor", { data: item })}
+        onPress={() => navigation.jumpTo("Editor", { data: item })}
       />
     );
   };
 
   return (
     <View style={styles.container}>
-      {isFiltering && (
+      <View
+        style={{
+          display: "flex",
+          gap: 16,
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          paddingBottom: 16,
+        }}
+      >
         <View
           style={{
-            padding: 10,
-            margin: 10,
-            borderRadius: 4,
-            backgroundColor: "#303030",
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            borderRadius: 50,
+            backgroundColor: colors.backgroundLighter,
             display: "flex",
             gap: 10,
             flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
           }}
         >
           <SearchButton />
           <TextInput
             style={{
               backgroundColor: "transparent",
-              color: "#fff",
+              color: colors.text,
               flex: 1,
             }}
-            placeholder="Search"
-            placeholderTextColor="#ffffff50"
+            placeholder="Cerca"
+            placeholderTextColor={colors.primary + "80"}
+            inputMode="search"
             value={query}
             onChangeText={(text) => setQuery(text)}
           />
         </View>
-      )}
+      </View>
       <FlatList
         data={filteredNotes}
         renderItem={renderNote}
         keyExtractor={(item) => item.id}
         // extraData={} // set this to re-render on a state change
         style={{ flex: 1 }}
+        refreshing={isFetching}
+        onRefresh={() => loadData(filter)}
       />
-      <NewNoteButton navigation={navigation} />
     </View>
   );
 }

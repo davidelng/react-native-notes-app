@@ -10,7 +10,7 @@ export default function SearchButton() {
       <Feather
         name="search"
         size={24}
-        style={{ color: colors.notification, marginRight: 16 }}
+        style={{ color: colors.primary + "80", marginRight: 16 }}
       />
     </Pressable>
   );

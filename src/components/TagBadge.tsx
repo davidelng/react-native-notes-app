@@ -1,0 +1,63 @@
+import { View, StyleSheet, Text } from "react-native";
+import { useTheme } from "@react-navigation/native";
+
+export default function TagBadge({ accent, content }) {
+  const { colors } = useTheme();
+
+  // return (
+  //   <View
+  //     style={[styles.container, { backgroundColor: colors[accent] + "50" }]}
+  //   >
+  //     <View
+  //       style={[styles.decoration, { backgroundColor: colors[accent] }]}
+  //     ></View>
+  //     <Text style={[styles.text, { color: colors.text }]}>{content}</Text>
+  //   </View>
+  // );
+
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors[accent] + "50",
+          // borderColor: colors[accent] + "70",
+          // borderWidth: 1,
+        },
+      ]}
+    >
+      <Text style={[styles.text, { color: colors[accent], fontWeight: "600" }]}>
+        {content}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 20,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    // paddingHorizontal: 5,
+    // paddingVertical: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    gap: 3,
+  },
+  decoration: {
+    // height: 6,
+    // width: 6,
+    height: 8,
+    width: 8,
+    borderRadius: 50,
+  },
+  text: {
+    // paddingHorizontal: 6,
+    // textTransform: "uppercase",
+    // fontWeight: "bold",
+    // fontSize: 10,
+    padding: 1,
+    fontSize: 14,
+  },
+});
