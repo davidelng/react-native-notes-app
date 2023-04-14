@@ -15,7 +15,7 @@ export default function TabNav({}) {
       screenOptions={{
         tabBarShowLabel: true,
         tabBarHideOnKeyboard: true,
-        // unmountOnBlur: true,
+        unmountOnBlur: true,
       }}
     >
       <Tab.Screen

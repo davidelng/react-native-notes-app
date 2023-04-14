@@ -48,9 +48,9 @@ export default function Editor({ route, navigation }) {
 
   const [note, setNote] = useState(emptyNote);
 
-  let data: Note;
-
   const db = Db.getConnection();
+
+  let data: Note;
 
   useEffect(() => {
     if (route.params?.data) {
@@ -58,6 +58,7 @@ export default function Editor({ route, navigation }) {
         ...route.params.data,
         timestamp: dateFormatter(route.params.data.timestamp),
       };
+      delete route.params.data;
     } else {
       data = emptyNote;
     }
@@ -65,17 +66,6 @@ export default function Editor({ route, navigation }) {
     setNote(data);
 
     loadTags();
-
-    const unsubscribe = () => {};
-    return () => unsubscribe();
-  }, [route.params?.data]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("tabPress", (e) => {
-      setNote(emptyNote);
-    });
-
-    return unsubscribe;
   }, [navigation]);
 
   useEffect(() => {
@@ -98,17 +88,12 @@ export default function Editor({ route, navigation }) {
               }}
             />
           )}
-          {/* <Pressable onPress={() => {}}>
+          <Pressable onPress={() => manageNote()}>
             <Feather name="save" size={24} style={{ color: colors.text }} />
-          </Pressable> */}
+          </Pressable>
         </View>
       ),
     });
-
-    const unsubscribe = navigation.addListener("blur", (e) => {
-      // manageNote();
-    });
-    return unsubscribe;
   }, [note]);
 
   function createNote(note: Note) {
@@ -154,10 +139,13 @@ export default function Editor({ route, navigation }) {
 
   function manageNote() {
     if (note.id === null && note.title !== "") {
-      return createNote(note);
-    } else if (note.id !== null && hasChanges(note, data)) {
-      return updateNote(note);
+      createNote(note);
+    } else if (note.id !== null && note.title !== "") {
+      updateNote(note);
+    } else {
+      alert("Impossibile salvare la nota");
     }
+    navigation.jumpTo("Tutte le note");
   }
 
   function deleteNote(id: number) {
@@ -205,7 +193,7 @@ export default function Editor({ route, navigation }) {
     setTagModalVisible(false);
   }
 
-  async function generateText(prompt: AIPrompt) {
+  function generateText(prompt: AIPrompt) {
     db.transaction((tx) => {
       tx.executeSql(
         queries.get("getConf"),
@@ -232,10 +220,10 @@ export default function Editor({ route, navigation }) {
     });
   }
 
-  async function handleAIGeneration(prompt: AIPrompt) {
+  function handleAIGeneration(prompt: AIPrompt) {
     setAILoading(true);
     if (AIPrompt.prompt !== "") {
-      await generateText(prompt);
+      generateText(prompt);
       setAIModalVisible(false);
     }
     setAIPrompt(emptyAIPrompt);
