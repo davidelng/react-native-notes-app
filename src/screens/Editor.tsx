@@ -64,13 +64,13 @@ export default function Editor({ route, navigation }) {
 
     setNote(data);
 
+    loadTags();
+
     const unsubscribe = () => {};
     return () => unsubscribe();
   }, [route.params?.data]);
 
   useEffect(() => {
-    loadTags();
-
     const unsubscribe = navigation.addListener("tabPress", (e) => {
       setNote(emptyNote);
     });
@@ -104,6 +104,11 @@ export default function Editor({ route, navigation }) {
         </View>
       ),
     });
+
+    const unsubscribe = navigation.addListener("blur", (e) => {
+      // manageNote();
+    });
+    return unsubscribe;
   }, [note]);
 
   function createNote(note: Note) {
@@ -329,7 +334,7 @@ export default function Editor({ route, navigation }) {
               onPress={() => {
                 setDeleteModalVisible(!deleteModalVisible);
                 deleteNote(note.id);
-                navigation.jumpTo("Tutte le note");
+                navigation.navigate("Tutte le note");
               }}
             >
               <Feather name="trash" size={24} color="#DC143C" />

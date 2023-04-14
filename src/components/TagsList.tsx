@@ -8,7 +8,7 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, AntDesign } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
@@ -21,6 +21,8 @@ export default function TagsList({ navigation }) {
   const [tagModalVisible, setTagModalVisible] = useState(false);
   const [newTag, setNewTag] = useState({ name: "", color: "" });
   const newTagRef = useRef(null);
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const tagColors = ["red", "orange", "yellow", "green", "blue", "purple"];
 
@@ -66,18 +68,26 @@ export default function TagsList({ navigation }) {
     }
   }
 
-  // const renderTag = ({ item }) => {
-  //   return (
-  //     <View style={styles.badgeContainer}>
-  //       <TagBadge accent={item.color} content={item.name} />
-  //       <Feather
-  //         name="chevron-right"
-  //         size={18}
-  //         style={{ color: colors.text + "80" }}
-  //       />
-  //     </View>
-  //   );
-  // };
+  function deleteTag() {
+    if (selectedTag) {
+      setDeleteModalVisible(false);
+      db.transaction((tx) => {
+        tx.executeSql(
+          queries.get("deleteTag"),
+          [selectedTag],
+          (txObj, res) => {
+            setSelectedTag(null);
+            loadTags();
+            return true;
+          },
+          (txObj, err) => {
+            alert(err.message);
+            return false;
+          }
+        );
+      });
+    }
+  }
 
   return (
     <ScrollView
@@ -108,18 +118,14 @@ export default function TagsList({ navigation }) {
         </View>
         <Feather name="plus" size={18} style={{ color: colors.text + "80" }} />
       </Pressable>
-      {/* {tags && (
-        <FlatList
-          data={tags}
-          renderItem={renderTag}
-          keyExtractor={(item) => item.id}
-          // extraData={}
-        />
-      )} */}
       {tags &&
         tags.map((tag) => {
           return (
             <Pressable
+              onLongPress={() => {
+                setSelectedTag(tag.id);
+                setDeleteModalVisible(true);
+              }}
               onPress={() =>
                 navigation.navigate("Tutte le note", { filter: tag.id })
               }
@@ -264,6 +270,50 @@ export default function TagsList({ navigation }) {
         </View>
       </Modal>
       {/* NEW TAG MODAL */}
+
+      {/* DELETE MODAL */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={deleteModalVisible}
+        onRequestClose={() => {
+          setDeleteModalVisible(!deleteModalVisible);
+        }}
+      >
+        <View style={styles.bottomView}>
+          <Pressable
+            onPress={() => setDeleteModalVisible(false)}
+            style={{ flex: 1, backgroundColor: "#00000080" }}
+          />
+          <View
+            style={[
+              styles.modalView,
+              { backgroundColor: colors.backgroundLighter },
+            ]}
+          >
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => {
+                setDeleteModalVisible(!deleteModalVisible);
+                deleteTag();
+              }}
+            >
+              <Feather name="trash" size={24} color="#DC143C" />
+              <Text style={[styles.modalButtonText, { color: "#DC143C" }]}>
+                Elimina definitivamente
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.modalButton}
+              onPress={() => setDeleteModalVisible(!deleteModalVisible)}
+            >
+              <AntDesign name="close" size={24} color={colors.text} />
+              <Text style={styles.modalButtonText}>Annulla</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      {/* DELETE MODAL */}
     </ScrollView>
   );
 }
@@ -319,5 +369,29 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderStyle: "solid",
+  },
+  modalButton: {
+    borderRadius: 4,
+    padding: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  modalText: {
+    // marginBottom: 15,
+    textAlign: "center",
+    fontSize: 16,
+  },
+  modalButtonText: {
+    color: "white",
+    textAlign: "left",
+  },
+  bottomView: {
+    flex: 1,
+    // padding: 16,
+    // display: "flex",
+    // alignItems: "center",
+    // justifyContent: "center",
   },
 });

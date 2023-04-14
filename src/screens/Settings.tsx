@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Button,
+  Pressable,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useTheme } from "@react-navigation/native";
@@ -24,7 +24,9 @@ export default function Settings({ navigation }) {
         queries.get("getConf"),
         ["OPENAI_API_KEY"],
         (tx, res) => {
-          setOpenaiKey(res.rows.item(0).value);
+          if (res.rows._array.length > 0) {
+            setOpenaiKey(res.rows.item(0).value);
+          }
         },
         (tx, err) => {
           return false;
@@ -83,11 +85,20 @@ export default function Settings({ navigation }) {
               marginBottom: 10,
             }}
           />
-          <Button
-            title="salva"
+          <Pressable
             onPress={() => updateApiKey(openaiKey)}
-            color={colors.primary}
-          />
+            style={{
+              // backgroundColor: colors.primary,
+              borderColor: colors.primary,
+              borderWidth: 1,
+              padding: 10,
+              borderRadius: 20,
+            }}
+          >
+            <Text style={{ color: colors.primary, textAlign: "center" }}>
+              Salva
+            </Text>
+          </Pressable>
         </View>
       </View>
       <View style={styles.section}>

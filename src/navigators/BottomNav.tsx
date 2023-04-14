@@ -4,7 +4,7 @@ import Settings from "../screens/Settings";
 import Home from "../screens/Home";
 import TagsList from "../components/TagsList";
 import { Feather, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
-import { Colors } from "react-native/Libraries/NewAppScreen";
+import Title from "../components/Title";
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +34,7 @@ export default function TabNav({}) {
             />
           ),
           tabBarLabel: "Note",
-          // headerTitle: "Native Notes",
+          headerTitle: (props) => <Title title="Note" />,
         }}
       />
       <Tab.Screen
@@ -48,6 +48,7 @@ export default function TabNav({}) {
               color={color}
             />
           ),
+          headerTitle: (props) => <Title title="Etichette" />,
           tabBarLabel: "Etichette",
         }}
       />
@@ -63,6 +64,7 @@ export default function TabNav({}) {
             //   color={color}
             // />
           ),
+          headerTitle: (props) => <Title title="Editor" />,
           tabBarLabel: "Crea",
         }}
       />
@@ -73,6 +75,7 @@ export default function TabNav({}) {
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" size={size} color={color} />
           ),
+          headerTitle: (props) => <Title title="Impostazioni" />,
           tabBarLabel: "Impostazioni",
         }}
       />
