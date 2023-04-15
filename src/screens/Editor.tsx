@@ -50,13 +50,6 @@ export default function Editor({ route, navigation }) {
 
   let data: Note;
 
-  // const bottomSheetRef = useRef<BottomSheet>(null);
-  // const snapPoints = useMemo(() => ["50%", "70%", "100%"], []);
-  // const handleSheetChanges = useCallback((index: number) => {
-  //   bottomSheetRef.current?.snapToIndex(index);
-  // }, []);
-  // const closeBottomSheet = () => bottomSheetRef.current?.close();
-
   const tagBottomSheetRef = useRef<BottomSheetModal>(null);
   const snapPoints = useMemo(() => ["50%", "70%", "90%"], []);
   const handleSheetChanges = useCallback((index: number) => {
@@ -142,15 +135,6 @@ export default function Editor({ route, navigation }) {
       )
     );
   }
-
-  // function hasChanges(currentNote: Note, initialData: Note) {
-  //   return (
-  //     currentNote.title !== "" &&
-  //     (currentNote.title !== initialData.title ||
-  //       currentNote.content !== initialData.content ||
-  //       currentNote.tag !== initialData.tag)
-  //   );
-  // }
 
   function manageNote() {
     if (note.id === null && note.title !== "") {
@@ -376,10 +360,6 @@ export default function Editor({ route, navigation }) {
             },
           ]}
         >
-          {/* <Pressable
-            onPress={() => setAIModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000050" }}
-          /> */}
           <View
             style={[
               styles.modalView,
@@ -400,7 +380,6 @@ export default function Editor({ route, navigation }) {
                     padding: 10,
                     marginBottom: 16,
                     fontSize: 14,
-                    // backgroundColor: colors.notification + "20",
                     borderRadius: 8,
                   }}
                   placeholder="Chiedi qualcosa all'intelligenza artificiale"
@@ -423,7 +402,6 @@ export default function Editor({ route, navigation }) {
                 >
                   <View
                     style={{
-                      // backgroundColor: colors.notification + "20",
                       borderRadius: 8,
                       padding: 10,
                     }}
@@ -450,7 +428,6 @@ export default function Editor({ route, navigation }) {
                   </View>
                   <View
                     style={{
-                      // backgroundColor: colors.notification + "20",
                       borderRadius: 8,
                       padding: 10,
                     }}
@@ -516,9 +493,6 @@ export default function Editor({ route, navigation }) {
                 </View>
               </>
             ) : (
-              // <Text style={{ color: colors.text }}>
-              //   Aspetta, sto elaborando..
-              // </Text>
               <ActivityIndicator size="large" color={colors.primary} />
             )}
           </View>
@@ -593,7 +567,6 @@ const styles = StyleSheet.create({
   },
   title: {
     padding: 16,
-    // borderBottomWidth: 1,
     fontSize: 20,
   },
   content: {
