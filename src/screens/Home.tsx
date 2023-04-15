@@ -36,7 +36,7 @@ export default function Home({ route, navigation }) {
             loadData(filter);
           }}
         >
-          <Ionicons name="swap-vertical" size={24} />
+          <Ionicons name="swap-vertical" size={24} color={colors.text} />
         </Pressable>
       ),
     });

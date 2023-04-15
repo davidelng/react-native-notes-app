@@ -44,6 +44,10 @@ export const DarkDefault: ExtendedTheme = {
   },
 };
 
+/**
+ * SLATE
+ */
+
 export const Slate: ExtendedTheme = {
   dark: true,
   colors: {
@@ -281,5 +285,49 @@ export const TokyoNightLight: ExtendedTheme = {
     green: "#33635c",
     blue: "#34548a",
     purple: "#5a4a78",
+  },
+};
+
+/**
+ * EVERFOREST
+ */
+
+export const Everforest: ExtendedTheme = {
+  dark: false,
+  colors: {
+    primary: "#737373",
+    background: "#F3EAD3",
+    backgroundLighter: "#E5DFC5",
+    card: "#F3EAD3",
+    text: "#404040",
+    border: "#E5DFC5",
+    notification: "#B9C0AB",
+    button: "#B9C0AB",
+    red: "#f85552",
+    orange: "#f57d26",
+    yellow: "#dfa000",
+    green: "#8da101",
+    blue: "#3a94c5",
+    purple: "#df69ba",
+  },
+};
+
+export const EverforestDark: ExtendedTheme = {
+  dark: true,
+  colors: {
+    primary: "#3c4841",
+    background: "#1e2326",
+    backgroundLighter: "#272e33",
+    card: "#1e2326",
+    text: "#d3c6aa",
+    border: "#1e2326",
+    notification: "#272e33",
+    button: "#272e33",
+    red: "#e67e80",
+    orange: "#e69875",
+    yellow: "#dbbc7f",
+    green: "#a7c080",
+    blue: "#7fbbb3",
+    purple: "#d699b6",
   },
 };
