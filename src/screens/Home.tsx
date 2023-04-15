@@ -1,4 +1,11 @@
-import { StyleSheet, View, FlatList, TextInput, Pressable } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  TextInput,
+  Pressable,
+  Text,
+} from "react-native";
 import NoteListItem from "../components/NoteListItem";
 import { useEffect, useState } from "react";
 import * as Db from "../db/Db";
@@ -18,23 +25,6 @@ export default function Home({ route, navigation }) {
 
   const filter =
     route.params && route.params.filter ? route.params.filter : null;
-
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <FilterButton
-  //         onPress={() => {
-  //           setIsFiltering((prev) => !prev);
-  //         }}
-  //       />
-  //     ),
-  //   });
-
-  //   const unsubscribe = navigation.addListener("focus", () => {
-  //     loadData(filter);
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -82,7 +72,7 @@ export default function Home({ route, navigation }) {
           setIsFetching(false);
         },
         (txObj, err) => {
-          alert(err.message);
+          // alert(err.message);
           setIsFetching(false);
           return false;
         }
@@ -144,15 +134,37 @@ export default function Home({ route, navigation }) {
           />
         </View>
       </View>
-      <FlatList
-        data={filteredNotes}
-        renderItem={renderNote}
-        keyExtractor={(item) => item.id}
-        // extraData={} // set this to re-render on a state change
-        style={{ flex: 1 }}
-        refreshing={isFetching}
-        onRefresh={() => loadData(filter)}
-      />
+      {filteredNotes.length > 0 ? (
+        <FlatList
+          data={filteredNotes}
+          renderItem={renderNote}
+          keyExtractor={(item) => item.id}
+          // extraData={} // set this to re-render on a state change
+          style={{ flex: 1 }}
+          refreshing={isFetching}
+          onRefresh={() => loadData(filter)}
+        />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: colors.primary + "30",
+              textAlign: "center",
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            Oh no, it's empty (・3・)
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

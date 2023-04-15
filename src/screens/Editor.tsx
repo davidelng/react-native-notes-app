@@ -8,20 +8,19 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@react-navigation/native";
-import { useState, useEffect, useRef } from "react";
+import Slider from "@react-native-community/slider";
+import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { Note, Tag, AIPrompt } from "../../types";
+import TrashNoteButton from "../components/TrashNoteButton";
+import TagBadge from "../components/TagBadge";
+import AIButton from "../components/AIButton";
+import { dateFormatter, getDateForCreation } from "../lib/dateFormatter";
+import { generateCompletion } from "../lib/openai";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
-import TrashNoteButton from "../components/TrashNoteButton";
-import { dateFormatter, getDateForCreation } from "../lib/dateFormatter";
-import { Note } from "../../types";
-import { AntDesign, Feather } from "@expo/vector-icons";
-import TagBadge from "../components/TagBadge";
-import { Tag } from "../../types";
-import AIButton from "../components/AIButton";
-import { generateCompletion } from "../lib/openai";
-import Slider from "@react-native-community/slider";
-import { AIPrompt } from "../../types";
 
 const emptyAIPrompt: AIPrompt = { prompt: "", temperature: 0, maxTokens: 1000 };
 
@@ -39,7 +38,6 @@ const emptyNote: Note = {
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [tagModalVisible, setTagModalVisible] = useState(false);
   const [AIModalVisible, setAIModalVisible] = useState(false);
   const [tags, setTags] = useState(null);
   const [AIPrompt, setAIPrompt] = useState(emptyAIPrompt);
@@ -48,9 +46,19 @@ export default function Editor({ route, navigation }) {
 
   const [note, setNote] = useState(emptyNote);
 
+  const db = Db.getConnection();
+
   let data: Note;
 
-  const db = Db.getConnection();
+  const tagBottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["50%", "70%", "90%"], []);
+  const handleSheetChanges = useCallback((index: number) => {
+    tagBottomSheetRef.current?.snapToIndex(index);
+  }, []);
+  const openBottomSheet = useCallback(() => {
+    tagBottomSheetRef.current?.present();
+  }, []);
+  const closeBottomSheet = () => tagBottomSheetRef.current?.dismiss();
 
   useEffect(() => {
     if (route.params?.data) {
@@ -58,24 +66,14 @@ export default function Editor({ route, navigation }) {
         ...route.params.data,
         timestamp: dateFormatter(route.params.data.timestamp),
       };
+      delete route.params.data;
     } else {
       data = emptyNote;
     }
 
     setNote(data);
 
-    const unsubscribe = () => {};
-    return () => unsubscribe();
-  }, [route.params?.data]);
-
-  useEffect(() => {
     loadTags();
-
-    const unsubscribe = navigation.addListener("tabPress", (e) => {
-      setNote(emptyNote);
-    });
-
-    return unsubscribe;
   }, [navigation]);
 
   useEffect(() => {
@@ -98,9 +96,9 @@ export default function Editor({ route, navigation }) {
               }}
             />
           )}
-          {/* <Pressable onPress={() => {}}>
+          <Pressable onPress={() => manageNote()}>
             <Feather name="save" size={24} style={{ color: colors.text }} />
-          </Pressable> */}
+          </Pressable>
         </View>
       ),
     });
@@ -138,21 +136,15 @@ export default function Editor({ route, navigation }) {
     );
   }
 
-  function hasChanges(currentNote: Note, initialData: Note) {
-    return (
-      currentNote.title !== "" &&
-      (currentNote.title !== initialData.title ||
-        currentNote.content !== initialData.content ||
-        currentNote.tag !== initialData.tag)
-    );
-  }
-
   function manageNote() {
     if (note.id === null && note.title !== "") {
-      return createNote(note);
-    } else if (note.id !== null && hasChanges(note, data)) {
-      return updateNote(note);
+      createNote(note);
+    } else if (note.id !== null && note.title !== "") {
+      updateNote(note);
+    } else {
+      alert("Impossibile salvare la nota");
     }
+    navigation.jumpTo("Tutte le note");
   }
 
   function deleteNote(id: number) {
@@ -197,10 +189,10 @@ export default function Editor({ route, navigation }) {
         return { ...prev, tagId: null, tag: null, tagColor: null };
       });
     }
-    setTagModalVisible(false);
+    closeBottomSheet();
   }
 
-  async function generateText(prompt: AIPrompt) {
+  function generateText(prompt: AIPrompt) {
     db.transaction((tx) => {
       tx.executeSql(
         queries.get("getConf"),
@@ -227,10 +219,10 @@ export default function Editor({ route, navigation }) {
     });
   }
 
-  async function handleAIGeneration(prompt: AIPrompt) {
+  function handleAIGeneration(prompt: AIPrompt) {
     setAILoading(true);
     if (AIPrompt.prompt !== "") {
-      await generateText(prompt);
+      generateText(prompt);
       setAIModalVisible(false);
     }
     setAIPrompt(emptyAIPrompt);
@@ -257,10 +249,7 @@ export default function Editor({ route, navigation }) {
         }
       />
       <View>
-        <Pressable
-          style={styles.picker}
-          onPress={() => setTagModalVisible(true)}
-        >
+        <Pressable style={styles.picker} onPress={() => openBottomSheet()}>
           {!note.tag && (
             <View
               style={{
@@ -329,7 +318,7 @@ export default function Editor({ route, navigation }) {
               onPress={() => {
                 setDeleteModalVisible(!deleteModalVisible);
                 deleteNote(note.id);
-                navigation.jumpTo("Tutte le note");
+                navigation.navigate("Tutte le note");
               }}
             >
               <Feather name="trash" size={24} color="#DC143C" />
@@ -348,62 +337,6 @@ export default function Editor({ route, navigation }) {
         </View>
       </Modal>
       {/* DELETE MODAL */}
-
-      {/* TAG MODAL */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={tagModalVisible}
-        onRequestClose={() => {
-          setTagModalVisible(!tagModalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <Pressable
-            onPress={() => setTagModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000080" }}
-          />
-          <View
-            style={[
-              styles.modalView,
-              { backgroundColor: colors.backgroundLighter },
-            ]}
-          >
-            <Pressable
-              onPress={() => selectTag(null)}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 16,
-              }}
-            >
-              <AntDesign name="close" size={18} color={colors.text} />
-              <Text style={{ color: colors.text }}>Nessuno</Text>
-            </Pressable>
-            {tags &&
-              tags.map((tag: Tag) => {
-                return (
-                  <Pressable
-                    key={tag.id}
-                    onPress={() => selectTag(tag)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "flex-start",
-                      marginBottom: 16,
-                    }}
-                  >
-                    <TagBadge accent={tag.color} content={tag.name} />
-                  </Pressable>
-                );
-              })}
-          </View>
-        </View>
-      </Modal>
-      {/* TAG MODAL */}
 
       {/* AI MODAL */}
       <Modal
@@ -427,10 +360,6 @@ export default function Editor({ route, navigation }) {
             },
           ]}
         >
-          {/* <Pressable
-            onPress={() => setAIModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000050" }}
-          /> */}
           <View
             style={[
               styles.modalView,
@@ -451,7 +380,6 @@ export default function Editor({ route, navigation }) {
                     padding: 10,
                     marginBottom: 16,
                     fontSize: 14,
-                    // backgroundColor: colors.notification + "20",
                     borderRadius: 8,
                   }}
                   placeholder="Chiedi qualcosa all'intelligenza artificiale"
@@ -474,7 +402,6 @@ export default function Editor({ route, navigation }) {
                 >
                   <View
                     style={{
-                      // backgroundColor: colors.notification + "20",
                       borderRadius: 8,
                       padding: 10,
                     }}
@@ -501,7 +428,6 @@ export default function Editor({ route, navigation }) {
                   </View>
                   <View
                     style={{
-                      // backgroundColor: colors.notification + "20",
                       borderRadius: 8,
                       padding: 10,
                     }}
@@ -567,15 +493,70 @@ export default function Editor({ route, navigation }) {
                 </View>
               </>
             ) : (
-              // <Text style={{ color: colors.text }}>
-              //   Aspetta, sto elaborando..
-              // </Text>
               <ActivityIndicator size="large" color={colors.primary} />
             )}
           </View>
         </View>
       </Modal>
       {/* AI MODAL */}
+
+      {/* TAG BOTTOM SHEET */}
+      <BottomSheetModal
+        ref={tagBottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: colors.backgroundLighter }}
+        handleIndicatorStyle={{ backgroundColor: colors.text }}
+      >
+        <View style={styles.bottomSheetView}>
+          <Pressable
+            onPress={() => selectTag(null)}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              marginBottom: 16,
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                backgroundColor: colors.primary + "50",
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                gap: 3,
+                borderRadius: 20,
+              }}
+            >
+              <AntDesign name="close" size={18} color={colors.text} />
+              <Text style={{ color: colors.text }}>Nessuno</Text>
+            </View>
+          </Pressable>
+          {tags &&
+            tags.map((tag: Tag) => {
+              return (
+                <Pressable
+                  key={tag.id}
+                  onPress={() => selectTag(tag)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    marginBottom: 16,
+                  }}
+                >
+                  <TagBadge accent={tag.color} content={tag.name} />
+                </Pressable>
+              );
+            })}
+        </View>
+      </BottomSheetModal>
+      {/* TAG BOTTOM SHEET */}
     </View>
   );
 }
@@ -586,7 +567,6 @@ const styles = StyleSheet.create({
   },
   title: {
     padding: 16,
-    // borderBottomWidth: 1,
     fontSize: 20,
   },
   content: {
@@ -639,8 +619,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    // marginBottom: 15,
     textAlign: "center",
     fontSize: 16,
+  },
+  bottomSheetView: {
+    padding: 25,
+    width: "100%",
   },
 });

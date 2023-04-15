@@ -7,12 +7,28 @@ import TabNav from "./src/navigators/BottomNav";
 import "react-native-url-polyfill/auto";
 import * as Db from "./src/db/Db";
 import { queries } from "./src/db/queries";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+// import { useFonts } from "expo-font";
 
 export default function App() {
   const scheme = useColorScheme();
   const theme = scheme === "dark" ? DarkDefault : LightDefault;
   const db = Db.getConnection();
-  const [notes, setNotes] = useState(null);
+
+  // const [fontsLoaded] = useFonts({
+  //   Poppins: require("./assets/fonts/Poppins-Regular.ttf"),
+  // });
+
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
+
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   useEffect(() => {
     queries.forEach((value, key) => {
@@ -23,9 +39,13 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer theme={theme}>
-      <TabNav />
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer theme={theme}>
+        <BottomSheetModalProvider>
+          <TabNav />
+          <StatusBar style="auto" />
+        </BottomSheetModalProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

@@ -126,4 +126,4 @@ queries.set(
     DO UPDATE SET value=?2;`
 );
 
-queries.set(`deleteCONF`, `DELETE FROM configuration  WHERE key = ?`);
+queries.set(`deleteConf`, `DELETE FROM configuration  WHERE key = ?`);
