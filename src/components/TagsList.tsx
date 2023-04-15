@@ -266,7 +266,7 @@ export default function TagsList({ navigation }) {
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => setDeleteModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000080" }}
+            style={{ flex: 1 }}
           />
           <View
             style={[
@@ -291,7 +291,9 @@ export default function TagsList({ navigation }) {
               onPress={() => setDeleteModalVisible(!deleteModalVisible)}
             >
               <AntDesign name="close" size={24} color={colors.text} />
-              <Text style={styles.modalButtonText}>Annulla</Text>
+              <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                Annulla
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -345,8 +347,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: "solid",
+    // borderWidth: 1,
+    // borderStyle: "solid",
   },
   modalButton: {
     borderRadius: 4,

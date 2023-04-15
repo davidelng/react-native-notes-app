@@ -11,7 +11,7 @@ import {
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@react-navigation/native";
 import Slider from "@react-native-community/slider";
-import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { Note, Tag, AIPrompt } from "../../types";
 import TrashNoteButton from "../components/TrashNoteButton";
@@ -305,7 +305,7 @@ export default function Editor({ route, navigation }) {
         <View style={styles.centeredView}>
           <Pressable
             onPress={() => setDeleteModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000080" }}
+            style={{ flex: 1 }}
           />
           <View
             style={[
@@ -331,7 +331,9 @@ export default function Editor({ route, navigation }) {
               onPress={() => setDeleteModalVisible(!deleteModalVisible)}
             >
               <AntDesign name="close" size={24} color={colors.text} />
-              <Text style={styles.modalButtonText}>Annulla</Text>
+              <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                Annulla
+              </Text>
             </Pressable>
           </View>
         </View>

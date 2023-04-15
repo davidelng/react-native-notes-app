@@ -36,9 +36,14 @@ export default function Home({ route, navigation }) {
             loadData(filter);
           }}
         >
-          <Ionicons name="swap-vertical" size={24} color={colors.text} />
+          <Ionicons name="swap-vertical" size={24} />
         </Pressable>
       ),
+    });
+
+    navigation.addListener("tabPress", (e) => {
+      delete route.params?.filter;
+      loadData(null);
     });
 
     loadData(filter);
@@ -49,18 +54,18 @@ export default function Home({ route, navigation }) {
   }, [listOrder]);
 
   function loadData(filter: number | null) {
-    // let query = "";
-    // let params = null;
-
-    // if (filter !== null) {
-    //   query = queries.get("getNotesByTag");
-    //   params = [filter];
-    // } else {
-    //   query = queries.get("getAllNotes") + " " + listOrder;
-    // }
-
-    let query = queries.get("getAllNotes") + " " + listOrder;
+    let query = "";
     let params = null;
+
+    if (filter !== null) {
+      query = queries.get("getNotesByTag");
+      params = [filter];
+    } else {
+      query = queries.get("getAllNotes") + " " + listOrder;
+    }
+
+    // let query = queries.get("getAllNotes") + " " + listOrder;
+    // let params = null;
 
     setIsFetching(true);
     db.transaction((tx) => {
@@ -142,7 +147,7 @@ export default function Home({ route, navigation }) {
           // extraData={} // set this to re-render on a state change
           style={{ flex: 1 }}
           refreshing={isFetching}
-          onRefresh={() => loadData(filter)}
+          onRefresh={() => loadData(null)}
         />
       ) : (
         <View

@@ -3,8 +3,8 @@ import Editor from "../screens/Editor";
 import Settings from "../screens/Settings";
 import Home from "../screens/Home";
 import TagsList from "../components/TagsList";
-import { Feather, MaterialCommunityIcons, AntDesign } from "@expo/vector-icons";
 import Title from "../components/Title";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,10 +21,7 @@ export default function TabNav({}) {
       <Tab.Screen
         name="Tutte le note"
         component={Home}
-        // initialParams={{
-        //   loadData: loadData,
-        //   notes: notes,
-        // }}
+        initialParams={{ filter: null }}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -58,11 +55,6 @@ export default function TabNav({}) {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="plus" size={size} color={color} />
-            // <MaterialCommunityIcons
-            //   name="note-edit-outline"
-            //   size={size}
-            //   color={color}
-            // />
           ),
           headerTitle: (props) => <Title title="Editor" />,
           tabBarLabel: "Crea",
