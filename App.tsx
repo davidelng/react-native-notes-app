@@ -7,6 +7,8 @@ import TabNav from "./src/navigators/BottomNav";
 import "react-native-url-polyfill/auto";
 import * as Db from "./src/db/Db";
 import { queries } from "./src/db/queries";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 // import { useFonts } from "expo-font";
 
 export default function App() {
@@ -37,9 +39,13 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer theme={theme}>
-      <TabNav />
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer theme={theme}>
+        <BottomSheetModalProvider>
+          <TabNav />
+          <StatusBar style="auto" />
+        </BottomSheetModalProvider>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

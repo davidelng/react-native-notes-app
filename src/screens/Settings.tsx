@@ -47,7 +47,6 @@ export default function Settings({ navigation }) {
           Usa preferenze di sistema per il tema
         </Text>
         <Text style={{ color: colors.text }}>Tema default</Text>
-        <Text style={{ color: colors.text }}>Stile dei tag</Text>
       </View>
       <View style={styles.section}>
         <Text style={[styles.heading, { color: colors.text + "99" }]}>

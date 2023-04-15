@@ -8,20 +8,19 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@react-navigation/native";
-import { useState, useEffect, useRef } from "react";
+import Slider from "@react-native-community/slider";
+import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { Note, Tag, AIPrompt } from "../../types";
+import TrashNoteButton from "../components/TrashNoteButton";
+import TagBadge from "../components/TagBadge";
+import AIButton from "../components/AIButton";
+import { dateFormatter, getDateForCreation } from "../lib/dateFormatter";
+import { generateCompletion } from "../lib/openai";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
-import TrashNoteButton from "../components/TrashNoteButton";
-import { dateFormatter, getDateForCreation } from "../lib/dateFormatter";
-import { Note } from "../../types";
-import { AntDesign, Feather } from "@expo/vector-icons";
-import TagBadge from "../components/TagBadge";
-import { Tag } from "../../types";
-import AIButton from "../components/AIButton";
-import { generateCompletion } from "../lib/openai";
-import Slider from "@react-native-community/slider";
-import { AIPrompt } from "../../types";
 
 const emptyAIPrompt: AIPrompt = { prompt: "", temperature: 0, maxTokens: 1000 };
 
@@ -39,7 +38,6 @@ const emptyNote: Note = {
 export default function Editor({ route, navigation }) {
   const { colors } = useTheme();
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [tagModalVisible, setTagModalVisible] = useState(false);
   const [AIModalVisible, setAIModalVisible] = useState(false);
   const [tags, setTags] = useState(null);
   const [AIPrompt, setAIPrompt] = useState(emptyAIPrompt);
@@ -51,6 +49,23 @@ export default function Editor({ route, navigation }) {
   const db = Db.getConnection();
 
   let data: Note;
+
+  // const bottomSheetRef = useRef<BottomSheet>(null);
+  // const snapPoints = useMemo(() => ["50%", "70%", "100%"], []);
+  // const handleSheetChanges = useCallback((index: number) => {
+  //   bottomSheetRef.current?.snapToIndex(index);
+  // }, []);
+  // const closeBottomSheet = () => bottomSheetRef.current?.close();
+
+  const tagBottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["50%", "70%", "90%"], []);
+  const handleSheetChanges = useCallback((index: number) => {
+    tagBottomSheetRef.current?.snapToIndex(index);
+  }, []);
+  const openBottomSheet = useCallback(() => {
+    tagBottomSheetRef.current?.present();
+  }, []);
+  const closeBottomSheet = () => tagBottomSheetRef.current?.dismiss();
 
   useEffect(() => {
     if (route.params?.data) {
@@ -128,14 +143,14 @@ export default function Editor({ route, navigation }) {
     );
   }
 
-  function hasChanges(currentNote: Note, initialData: Note) {
-    return (
-      currentNote.title !== "" &&
-      (currentNote.title !== initialData.title ||
-        currentNote.content !== initialData.content ||
-        currentNote.tag !== initialData.tag)
-    );
-  }
+  // function hasChanges(currentNote: Note, initialData: Note) {
+  //   return (
+  //     currentNote.title !== "" &&
+  //     (currentNote.title !== initialData.title ||
+  //       currentNote.content !== initialData.content ||
+  //       currentNote.tag !== initialData.tag)
+  //   );
+  // }
 
   function manageNote() {
     if (note.id === null && note.title !== "") {
@@ -190,7 +205,7 @@ export default function Editor({ route, navigation }) {
         return { ...prev, tagId: null, tag: null, tagColor: null };
       });
     }
-    setTagModalVisible(false);
+    closeBottomSheet();
   }
 
   function generateText(prompt: AIPrompt) {
@@ -250,10 +265,7 @@ export default function Editor({ route, navigation }) {
         }
       />
       <View>
-        <Pressable
-          style={styles.picker}
-          onPress={() => setTagModalVisible(true)}
-        >
+        <Pressable style={styles.picker} onPress={() => openBottomSheet()}>
           {!note.tag && (
             <View
               style={{
@@ -341,62 +353,6 @@ export default function Editor({ route, navigation }) {
         </View>
       </Modal>
       {/* DELETE MODAL */}
-
-      {/* TAG MODAL */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={tagModalVisible}
-        onRequestClose={() => {
-          setTagModalVisible(!tagModalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <Pressable
-            onPress={() => setTagModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000080" }}
-          />
-          <View
-            style={[
-              styles.modalView,
-              { backgroundColor: colors.backgroundLighter },
-            ]}
-          >
-            <Pressable
-              onPress={() => selectTag(null)}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 16,
-              }}
-            >
-              <AntDesign name="close" size={18} color={colors.text} />
-              <Text style={{ color: colors.text }}>Nessuno</Text>
-            </Pressable>
-            {tags &&
-              tags.map((tag: Tag) => {
-                return (
-                  <Pressable
-                    key={tag.id}
-                    onPress={() => selectTag(tag)}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      justifyContent: "flex-start",
-                      marginBottom: 16,
-                    }}
-                  >
-                    <TagBadge accent={tag.color} content={tag.name} />
-                  </Pressable>
-                );
-              })}
-          </View>
-        </View>
-      </Modal>
-      {/* TAG MODAL */}
 
       {/* AI MODAL */}
       <Modal
@@ -569,6 +525,64 @@ export default function Editor({ route, navigation }) {
         </View>
       </Modal>
       {/* AI MODAL */}
+
+      {/* TAG BOTTOM SHEET */}
+      <BottomSheetModal
+        ref={tagBottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: colors.backgroundLighter }}
+        handleIndicatorStyle={{ backgroundColor: colors.text }}
+      >
+        <View style={styles.bottomSheetView}>
+          <Pressable
+            onPress={() => selectTag(null)}
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-start",
+              marginBottom: 16,
+            }}
+          >
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                backgroundColor: colors.primary + "50",
+                paddingHorizontal: 6,
+                paddingVertical: 2,
+                gap: 3,
+                borderRadius: 20,
+              }}
+            >
+              <AntDesign name="close" size={18} color={colors.text} />
+              <Text style={{ color: colors.text }}>Nessuno</Text>
+            </View>
+          </Pressable>
+          {tags &&
+            tags.map((tag: Tag) => {
+              return (
+                <Pressable
+                  key={tag.id}
+                  onPress={() => selectTag(tag)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    marginBottom: 16,
+                  }}
+                >
+                  <TagBadge accent={tag.color} content={tag.name} />
+                </Pressable>
+              );
+            })}
+        </View>
+      </BottomSheetModal>
+      {/* TAG BOTTOM SHEET */}
     </View>
   );
 }
@@ -632,8 +646,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalText: {
-    // marginBottom: 15,
     textAlign: "center",
     fontSize: 16,
+  },
+  bottomSheetView: {
+    padding: 25,
+    width: "100%",
   },
 });
