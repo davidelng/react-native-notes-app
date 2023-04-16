@@ -27,7 +27,7 @@ export const LightDefault: ExtendedTheme = {
 export const DarkDefault: ExtendedTheme = {
   dark: true,
   colors: {
-    primary: "#737373",
+    primary: "#D4D4D4",
     background: "#000000",
     backgroundLighter: "#171717",
     card: "#000000",
@@ -52,6 +52,26 @@ export const Slate: ExtendedTheme = {
   dark: true,
   colors: {
     primary: "#5e81ac",
+    background: "#f1f5f9",
+    backgroundLighter: "#e2e8f0",
+    card: "#f1f5f9",
+    text: "#030712",
+    border: "#cbd5e1",
+    notification: "#374151",
+    button: "#9ca3af",
+    red: "#ef4444",
+    orange: "#f97316",
+    yellow: "#eab308",
+    green: "#22c55e",
+    blue: "#0ea5e9",
+    purple: "#8b5cf6",
+  },
+};
+
+export const SlateDark: ExtendedTheme = {
+  dark: true,
+  colors: {
+    primary: "#5e81ac",
     background: "#030712",
     backgroundLighter: "#111827",
     card: "#030712",
@@ -72,16 +92,16 @@ export const Slate: ExtendedTheme = {
  * SOLARIZED
  */
 
-export const SolarizedDark: ExtendedTheme = {
-  dark: true,
+export const Solarized: ExtendedTheme = {
+  dark: false,
   colors: {
     primary: "#586E75",
-    background: "#002B36",
-    backgroundLighter: "#073642",
-    card: "#002B36",
-    text: "#FDF6E3",
-    border: "#002B36",
-    notification: "#586E75",
+    background: "#FDF6E3",
+    backgroundLighter: "#EEE8D5",
+    card: "#FDF6E3",
+    text: "#002B36",
+    border: "#EEE8D5",
+    notification: "#93A1A1",
     button: "#586E75",
     red: "#DC322F",
     orange: "#CB4B16",
@@ -92,16 +112,16 @@ export const SolarizedDark: ExtendedTheme = {
   },
 };
 
-export const Solarized: ExtendedTheme = {
-  dark: false,
+export const SolarizedDark: ExtendedTheme = {
+  dark: true,
   colors: {
     primary: "#586E75",
-    background: "#FDF6E3",
-    backgroundLighter: "#EEE8D5",
-    card: "#FDF6E3",
-    text: "#002B36",
-    border: "#FDF6E3",
-    notification: "#93A1A1",
+    background: "#002B36",
+    backgroundLighter: "#073642",
+    card: "#002B36",
+    text: "#FDF6E3",
+    border: "#073642",
+    notification: "#586E75",
     button: "#586E75",
     red: "#DC322F",
     orange: "#CB4B16",
@@ -116,26 +136,6 @@ export const Solarized: ExtendedTheme = {
  * ROSE PINE
  */
 
-export const RosePine: ExtendedTheme = {
-  dark: true,
-  colors: {
-    primary: "#c4a7e7",
-    background: "#191724",
-    backgroundLighter: "#1f1d2e",
-    card: "#191724",
-    text: "#e0def4",
-    border: "#191724",
-    notification: "#908caa",
-    button: "#31748f",
-    red: "#eb6f92",
-    orange: "#f6c177",
-    yellow: "#ebbcba",
-    green: "#9ccfd8",
-    blue: "#31748f",
-    purple: "#c4a7e7",
-  },
-};
-
 export const RosePineDawn: ExtendedTheme = {
   dark: false,
   colors: {
@@ -144,7 +144,7 @@ export const RosePineDawn: ExtendedTheme = {
     backgroundLighter: "#f2e9e1",
     card: "#faf4ed",
     text: "#575279",
-    border: "#faf4ed",
+    border: "#f2e9e1",
     notification: "#9893a5",
     button: "#9893a5",
     red: "#b4637a",
@@ -156,9 +156,49 @@ export const RosePineDawn: ExtendedTheme = {
   },
 };
 
+export const RosePine: ExtendedTheme = {
+  dark: true,
+  colors: {
+    primary: "#c4a7e7",
+    background: "#191724",
+    backgroundLighter: "#1f1d2e",
+    card: "#191724",
+    text: "#e0def4",
+    border: "#1f1d2e",
+    notification: "#908caa",
+    button: "#31748f",
+    red: "#eb6f92",
+    orange: "#f6c177",
+    yellow: "#ebbcba",
+    green: "#9ccfd8",
+    blue: "#31748f",
+    purple: "#c4a7e7",
+  },
+};
+
 /**
  * NORD
  */
+
+export const NordSnow: ExtendedTheme = {
+  dark: false,
+  colors: {
+    primary: "#5e81ac",
+    background: "#eceff4",
+    backgroundLighter: "#d8dee9",
+    card: "#eceff4",
+    text: "#2e3440",
+    border: "#d8dee9",
+    notification: "#3b4252",
+    button: "#2e3440",
+    red: "#bf616a",
+    orange: "#d08770",
+    yellow: "#ebcb8b",
+    green: "#a3be8c",
+    blue: "#5e81ac",
+    purple: "#b48ead",
+  },
+};
 
 export const Nord: ExtendedTheme = {
   dark: true,
@@ -180,29 +220,29 @@ export const Nord: ExtendedTheme = {
   },
 };
 
-export const NordSnow: ExtendedTheme = {
-  dark: false,
-  colors: {
-    primary: "#5e81ac",
-    background: "#eceff4",
-    backgroundLighter: "#d8dee9",
-    card: "#eceff4",
-    text: "#2e3440",
-    border: "#eceff4",
-    notification: "#d8dee9",
-    button: "#2e3440",
-    red: "#bf616a",
-    orange: "#d08770",
-    yellow: "#ebcb8b",
-    green: "#a3be8c",
-    blue: "#5e81ac",
-    purple: "#b48ead",
-  },
-};
-
 /**
  * GRVUBOX
  */
+
+export const Gruvbox: ExtendedTheme = {
+  dark: false,
+  colors: {
+    primary: "#737373",
+    background: "#FBF1C7",
+    backgroundLighter: "#EBDBB2",
+    card: "#FBF1C7",
+    text: "#1D2021",
+    border: "#EBDBB2",
+    notification: "#928374",
+    button: "#928374",
+    red: "#FB4934",
+    orange: "#FE8019",
+    yellow: "#FABD2F",
+    green: "#B8BB26",
+    blue: "#8EC07C",
+    purple: "#D3869B",
+  },
+};
 
 export const GruvboxDark: ExtendedTheme = {
   dark: true,
@@ -224,49 +264,9 @@ export const GruvboxDark: ExtendedTheme = {
   },
 };
 
-export const Gruvbox: ExtendedTheme = {
-  dark: false,
-  colors: {
-    primary: "#737373",
-    background: "#FBF1C7",
-    backgroundLighter: "#EBDBB2",
-    card: "#FBF1C7",
-    text: "#1D2021",
-    border: "#FBF1C7",
-    notification: "#928374",
-    button: "#928374",
-    red: "#FB4934",
-    orange: "#FE8019",
-    yellow: "#FABD2F",
-    green: "#B8BB26",
-    blue: "#8EC07C",
-    purple: "#D3869B",
-  },
-};
-
 /**
  * TOKYONIGHT
  */
-
-export const TokyoNight: ExtendedTheme = {
-  dark: true,
-  colors: {
-    primary: "#9AA5CE",
-    background: "#1A1B26",
-    backgroundLighter: "#24283B",
-    card: "#1A1B26",
-    text: "#A9B1D6",
-    border: "#1A1B26",
-    notification: "#414868",
-    button: "#414868",
-    red: "#F7768E",
-    orange: "#FF9E64",
-    yellow: "#E0AF68",
-    green: "#9ECE6A",
-    blue: "#73DACA",
-    purple: "#BB9AF7",
-  },
-};
 
 export const TokyoNightLight: ExtendedTheme = {
   dark: false,
@@ -276,7 +276,7 @@ export const TokyoNightLight: ExtendedTheme = {
     backgroundLighter: "#bfc0c5",
     card: "#d5d6db",
     text: "#343b58",
-    border: "#d5d6db",
+    border: "#bfc0c5",
     notification: "#9699a3",
     button: "#414868",
     red: "#8c4351",
@@ -285,6 +285,26 @@ export const TokyoNightLight: ExtendedTheme = {
     green: "#33635c",
     blue: "#34548a",
     purple: "#5a4a78",
+  },
+};
+
+export const TokyoNight: ExtendedTheme = {
+  dark: true,
+  colors: {
+    primary: "#9AA5CE",
+    background: "#1A1B26",
+    backgroundLighter: "#24283B",
+    card: "#1A1B26",
+    text: "#A9B1D6",
+    border: "#24283B",
+    notification: "#414868",
+    button: "#414868",
+    red: "#F7768E",
+    orange: "#FF9E64",
+    yellow: "#E0AF68",
+    green: "#9ECE6A",
+    blue: "#73DACA",
+    purple: "#BB9AF7",
   },
 };
 
@@ -321,7 +341,7 @@ export const EverforestDark: ExtendedTheme = {
     card: "#1e2326",
     text: "#d3c6aa",
     border: "#1e2326",
-    notification: "#272e33",
+    notification: "#9da9a0",
     button: "#272e33",
     red: "#e67e80",
     orange: "#e69875",

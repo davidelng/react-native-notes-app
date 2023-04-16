@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { DarkDefault, LightDefault } from "./src/themes/themes";
+import * as Themes from "./src/themes/themes";
 import TabNav from "./src/navigators/BottomNav";
 import "react-native-url-polyfill/auto";
 import * as Db from "./src/db/Db";
@@ -12,9 +12,9 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 // import { useFonts } from "expo-font";
 
 export default function App() {
-  const scheme = useColorScheme();
-  const theme = scheme === "dark" ? DarkDefault : LightDefault;
   const db = Db.getConnection();
+  const scheme = useColorScheme();
+  const theme = scheme === "dark" ? Themes.DarkDefault : Themes.LightDefault;
 
   // const [fontsLoaded] = useFonts({
   //   Poppins: require("./assets/fonts/Poppins-Regular.ttf"),

@@ -175,7 +175,7 @@ export default function TagsList({ navigation }) {
                 paddingHorizontal: 16,
                 paddingVertical: 10,
                 backgroundColor: colors.notification + "20",
-                borderRadius: 8,
+                borderRadius: 50,
                 marginBottom: 16,
               }}
               placeholder="Nuova etichetta"
@@ -238,11 +238,14 @@ export default function TagsList({ navigation }) {
           >
             <Pressable
               onPress={addNewTag}
-              style={[styles.button, { backgroundColor: colors.primary }]}
+              style={[
+                styles.button,
+                { backgroundColor: colors.primary + "80" },
+              ]}
             >
               <Text
                 style={{
-                  color: colors.text,
+                  color: colors.primary,
                   textAlign: "center",
                 }}
               >
@@ -346,7 +349,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 50,
     // borderWidth: 1,
     // borderStyle: "solid",
   },

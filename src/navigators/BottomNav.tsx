@@ -4,7 +4,7 @@ import Settings from "../screens/Settings";
 import Home from "../screens/Home";
 import TagsList from "../components/TagsList";
 import Title from "../components/Title";
-import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -65,7 +65,8 @@ export default function TabNav({}) {
         component={Settings}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Feather name="settings" size={size} color={color} />
+            // <Feather name="settings" size={size} color={color} />
+            <Ionicons name="settings-outline" size={size} color={color} />
           ),
           headerTitle: (props) => <Title title="Impostazioni" />,
           tabBarLabel: "Impostazioni",

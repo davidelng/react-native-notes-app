@@ -72,7 +72,6 @@ export default function Editor({ route, navigation }) {
     }
 
     setNote(data);
-
     loadTags();
   }, [navigation]);
 
@@ -280,7 +279,7 @@ export default function Editor({ route, navigation }) {
       </View>
       <ScrollView>
         <TextInput
-          style={[styles.content, { color: colors.text }]}
+          style={[styles.content, { color: colors.text + "f0" }]}
           placeholder="..."
           placeholderTextColor={colors.notification}
           multiline
@@ -570,11 +569,13 @@ const styles = StyleSheet.create({
   title: {
     padding: 16,
     fontSize: 20,
+    fontWeight: "600",
   },
   content: {
     padding: 16,
     flex: 1,
     textAlignVertical: "top",
+    fontSize: 16,
   },
   date: {
     fontSize: 12,
