@@ -14,6 +14,46 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 export default function App() {
   const db = Db.getConnection();
   const scheme = useColorScheme();
+  const [isUsingScheme, setIsUsingScheme] = useState(null);
+  const [defaultTheme, setDefaultTheme] = useState(null);
+  const [lightTheme, setLightTheme] = useState(null);
+  const [darkTheme, setDarkTheme] = useState(null);
+
+  // db.transaction((tx) =>
+  //   tx.executeSql(
+  //     queries.get("getAllConf"),
+  //     null,
+  //     (txObj, res) => {
+  //       if (res.rows._array.length > 0) {
+  //         for (let conf of res.rows._array) {
+  //           if (conf.key === "USE_SYSTEM_THEME" && conf.value === "enabled") {
+  //             setIsUsingScheme(true);
+  //           } else {
+  //             setIsUsingScheme(false);
+  //           }
+  //           if (conf.key === "DEFAULT_THEME_CHOICE") {
+  //             setDefaultTheme(conf.value);
+  //           } else if (conf.key === "LIGHT_THEME_CHOICE") {
+  //             setLightTheme(conf.value);
+  //           } else if (conf.key === "DARK_THEME_CHOICE") {
+  //             setDarkTheme(conf.value);
+  //           }
+  //         }
+  //       }
+  //       return true;
+  //     },
+  //     (txObj, err) => {
+  //       return false;
+  //     }
+  //   )
+  // );
+
+  // let theme = defaultTheme ? Themes[defaultTheme] : Themes.DarkDefault;
+  // if (isUsingScheme) {
+  //   let dark = darkTheme ? Themes[darkTheme] : Themes.DarkDefault;
+  //   let light = lightTheme ? Themes[lightTheme] : Themes.LightDefault;
+  //   theme = scheme === "dark" ? dark : light;
+  // }
   const theme = scheme === "dark" ? Themes.DarkDefault : Themes.LightDefault;
 
   // const [fontsLoaded] = useFonts({

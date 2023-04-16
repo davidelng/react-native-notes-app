@@ -36,7 +36,9 @@ export default function TagsList({ navigation }) {
   const openBottomSheet = useCallback(() => {
     tagBottomSheetRef.current?.present();
   }, []);
-  const closeBottomSheet = () => tagBottomSheetRef.current?.dismiss();
+  const closeBottomSheet = useCallback(() => {
+    tagBottomSheetRef.current?.dismiss();
+  }, []);
 
   useEffect(() => {
     loadTags();

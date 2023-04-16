@@ -58,7 +58,9 @@ export default function Editor({ route, navigation }) {
   const openBottomSheet = useCallback(() => {
     tagBottomSheetRef.current?.present();
   }, []);
-  const closeBottomSheet = () => tagBottomSheetRef.current?.dismiss();
+  const closeBottomSheet = useCallback(() => {
+    tagBottomSheetRef.current?.dismiss();
+  }, []);
 
   useEffect(() => {
     if (route.params?.data) {

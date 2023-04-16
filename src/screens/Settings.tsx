@@ -7,7 +7,7 @@ import {
   Pressable,
   Switch,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@react-navigation/native";
 import * as Db from "../db/Db";
 import { queries } from "../db/queries";
@@ -15,15 +15,24 @@ import { updateApiKey } from "../lib/openai";
 import * as Themes from "../themes/themes";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-let lightThemes = [];
-let darkThemes = [];
-for (let t in Themes) {
-  if (Themes[t].dark) {
-    darkThemes.push({ [t]: Themes[t] });
-  } else {
-    lightThemes.push({ [t]: Themes[t] });
-  }
+function ThemeButton({ name, onPress }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      style={{
+        padding: 10,
+        backgroundColor: colors.primary + "50",
+        borderRadius: 50,
+      }}
+    >
+      <Text style={{ color: colors.text, fontSize: 16, textAlign: "center" }}>
+        {name}
+      </Text>
+    </Pressable>
+  );
 }
 
 export default function Settings({ navigation }) {
@@ -31,29 +40,62 @@ export default function Settings({ navigation }) {
   const [openaiKey, setOpenaiKey] = useState(null);
   const [useSystemTheme, setUseSystemTheme] = useState(null);
   const [isAIEditing, setIsAIEditing] = useState(false);
+  const [bottomSheetContent, setBottomSheetContent] = useState(null);
   const db = Db.getConnection();
+
+  let bottomSheetLightThemes = [];
+  let bottomSheetDarkThemes = [];
+  let bottomSheetAllThemes = [];
+  for (let t in Themes) {
+    if (Themes[t].dark) {
+      bottomSheetDarkThemes.push(
+        <ThemeButton
+          key={t}
+          name={t}
+          onPress={() => setThemeChoice(t, false, true)}
+        />
+      );
+    } else {
+      bottomSheetLightThemes.push(
+        <ThemeButton
+          key={t}
+          name={t}
+          onPress={() => setThemeChoice(t, false, false)}
+        />
+      );
+    }
+    bottomSheetAllThemes.push(
+      <ThemeButton key={t} name={t} onPress={() => setThemeChoice(t, true)} />
+    );
+  }
+
+  const themeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["50%", "70%", "90%"], []);
+  const handleSheetChanges = useCallback((index: number) => {
+    themeBottomSheetRef.current?.snapToIndex(index);
+  }, []);
+  const openBottomSheet = useCallback((type: "dark" | "light" | "default") => {
+    switch (type) {
+      case "dark":
+        setBottomSheetContent(bottomSheetDarkThemes);
+        break;
+      case "light":
+        setBottomSheetContent(bottomSheetLightThemes);
+        break;
+      case "default":
+        setBottomSheetContent(bottomSheetAllThemes);
+        break;
+    }
+    themeBottomSheetRef.current?.present();
+  }, []);
+  const closeBottomSheet = useCallback(() => {
+    themeBottomSheetRef.current?.dismiss();
+  }, []);
 
   useEffect(() => {
     getSystemThemePreference();
     getOpenaiKey();
   }, [navigation]);
-
-  function getOpenaiKey() {
-    db.transaction((tx) =>
-      tx.executeSql(
-        queries.get("getConf"),
-        ["OPENAI_API_KEY"],
-        (tx, res) => {
-          if (res.rows._array.length > 0) {
-            setOpenaiKey(res.rows.item(0).value);
-          }
-        },
-        (tx, err) => {
-          return false;
-        }
-      )
-    );
-  }
 
   function getSystemThemePreference() {
     db.transaction((tx) =>
@@ -84,6 +126,45 @@ export default function Settings({ navigation }) {
         (tx, res) => {
           setUseSystemTheme(value);
           return true;
+        },
+        (tx, err) => {
+          return false;
+        }
+      )
+    );
+  }
+
+  function setThemeChoice(name: string, isDefault?: boolean, dark?: boolean) {
+    let confName = isDefault
+      ? "DEFAULT_THEME_CHOICE"
+      : dark
+      ? "DARK_THEME_CHOICE"
+      : "LIGHT_THEME_CHOICE";
+
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("upsertConf"),
+        [confName, name],
+        (tx, res) => {
+          closeBottomSheet();
+          return true;
+        },
+        (tx, err) => {
+          return false;
+        }
+      )
+    );
+  }
+
+  function getOpenaiKey() {
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("getConf"),
+        ["OPENAI_API_KEY"],
+        (tx, res) => {
+          if (res.rows._array.length > 0) {
+            setOpenaiKey(res.rows.item(0).value);
+          }
         },
         (tx, err) => {
           return false;
@@ -126,7 +207,7 @@ export default function Settings({ navigation }) {
         {useSystemTheme ? (
           <>
             <Pressable
-              onPress={() => {}}
+              onPress={() => openBottomSheet("light")}
               style={{
                 backgroundColor: colors.primary + "80",
                 padding: 10,
@@ -139,7 +220,7 @@ export default function Settings({ navigation }) {
               </Text>
             </Pressable>
             <Pressable
-              onPress={() => {}}
+              onPress={() => openBottomSheet("dark")}
               style={{
                 backgroundColor: colors.primary + "80",
                 padding: 10,
@@ -153,7 +234,7 @@ export default function Settings({ navigation }) {
           </>
         ) : (
           <Pressable
-            onPress={() => {}}
+            onPress={() => openBottomSheet("default")}
             style={{
               backgroundColor: colors.primary + "80",
               padding: 10,
@@ -244,6 +325,28 @@ export default function Settings({ navigation }) {
           <Text style={{ color: colors.text, fontSize: 16 }}>GitHub</Text>
         </Pressable>
       </View>
+      <BottomSheetModal
+        ref={themeBottomSheetRef}
+        index={0}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        enablePanDownToClose={true}
+        backgroundStyle={{ backgroundColor: colors.backgroundLighter }}
+        handleIndicatorStyle={{ backgroundColor: colors.text }}
+      >
+        <View
+          style={{
+            padding: 16,
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+            gap: 10,
+          }}
+        >
+          {bottomSheetContent}
+        </View>
+      </BottomSheetModal>
     </ScrollView>
   );
 }
