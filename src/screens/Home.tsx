@@ -13,6 +13,7 @@ import { queries } from "../db/queries";
 import SearchButton from "../components/SearchButton";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
+import SkeletonNote from "../components/SkeletonNote";
 
 export default function Home({ route, navigation }) {
   const db = Db.getConnection();
@@ -20,6 +21,7 @@ export default function Home({ route, navigation }) {
   const [query, setQuery] = useState("");
   const [isFetching, setIsFetching] = useState(false);
   const [listOrder, setListOrder] = useState("DESC");
+  const [showSkeleton, setShowSkeleton] = useState(true);
 
   const { colors } = useTheme();
 
@@ -41,6 +43,11 @@ export default function Home({ route, navigation }) {
       ),
     });
 
+    navigation.addListener("tabPress", (e) => {
+      delete route.params?.filter;
+      loadData(null);
+    });
+
     loadData(filter);
   }, []);
 
@@ -49,18 +56,15 @@ export default function Home({ route, navigation }) {
   }, [listOrder]);
 
   function loadData(filter: number | null) {
-    // let query = "";
-    // let params = null;
-
-    // if (filter !== null) {
-    //   query = queries.get("getNotesByTag");
-    //   params = [filter];
-    // } else {
-    //   query = queries.get("getAllNotes") + " " + listOrder;
-    // }
-
-    let query = queries.get("getAllNotes") + " " + listOrder;
+    let query = "";
     let params = null;
+
+    if (filter !== null) {
+      query = queries.get("getNotesByTag");
+      params = [filter];
+    } else {
+      query = queries.get("getAllNotes") + " " + listOrder;
+    }
 
     setIsFetching(true);
     db.transaction((tx) => {
@@ -70,10 +74,11 @@ export default function Home({ route, navigation }) {
         (txObj, result) => {
           setNotes(result.rows._array);
           setIsFetching(false);
+          setShowSkeleton(false);
         },
         (txObj, err) => {
-          // alert(err.message);
           setIsFetching(false);
+          setShowSkeleton(false);
           return false;
         }
       );
@@ -103,7 +108,7 @@ export default function Home({ route, navigation }) {
           flexDirection: "row",
           alignItems: "center",
           paddingHorizontal: 16,
-          paddingBottom: 16,
+          paddingVertical: 8,
         }}
       >
         <View
@@ -134,15 +139,21 @@ export default function Home({ route, navigation }) {
           />
         </View>
       </View>
-      {filteredNotes.length > 0 ? (
+      {showSkeleton ? (
+        <View>
+          <SkeletonNote />
+          <SkeletonNote />
+          <SkeletonNote />
+          <SkeletonNote />
+        </View>
+      ) : filteredNotes.length > 0 ? (
         <FlatList
           data={filteredNotes}
           renderItem={renderNote}
           keyExtractor={(item) => item.id}
-          // extraData={} // set this to re-render on a state change
           style={{ flex: 1 }}
           refreshing={isFetching}
-          onRefresh={() => loadData(filter)}
+          onRefresh={() => loadData(null)}
         />
       ) : (
         <View

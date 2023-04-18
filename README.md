@@ -2,17 +2,13 @@
 
 Todo for v1:
 
-- modal close on blur
-- new tag modal restyle
-- delete/update tag
-- fix order by
+- autosave
+- update tag
 - pin notes
-- add settings at least for api key
-- huge refactor
+- huge refactor and optimization
 
 Extra:
 
-- themes support
 - export as file
 - rich text editor
 - share

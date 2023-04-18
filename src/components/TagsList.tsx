@@ -36,7 +36,9 @@ export default function TagsList({ navigation }) {
   const openBottomSheet = useCallback(() => {
     tagBottomSheetRef.current?.present();
   }, []);
-  const closeBottomSheet = () => tagBottomSheetRef.current?.dismiss();
+  const closeBottomSheet = useCallback(() => {
+    tagBottomSheetRef.current?.dismiss();
+  }, []);
 
   useEffect(() => {
     loadTags();
@@ -175,7 +177,7 @@ export default function TagsList({ navigation }) {
                 paddingHorizontal: 16,
                 paddingVertical: 10,
                 backgroundColor: colors.notification + "20",
-                borderRadius: 8,
+                borderRadius: 50,
                 marginBottom: 16,
               }}
               placeholder="Nuova etichetta"
@@ -238,11 +240,14 @@ export default function TagsList({ navigation }) {
           >
             <Pressable
               onPress={addNewTag}
-              style={[styles.button, { backgroundColor: colors.primary }]}
+              style={[
+                styles.button,
+                { backgroundColor: colors.primary + "80" },
+              ]}
             >
               <Text
                 style={{
-                  color: colors.text,
+                  color: colors.primary,
                   textAlign: "center",
                 }}
               >
@@ -266,7 +271,7 @@ export default function TagsList({ navigation }) {
         <View style={{ flex: 1 }}>
           <Pressable
             onPress={() => setDeleteModalVisible(false)}
-            style={{ flex: 1, backgroundColor: "#00000080" }}
+            style={{ flex: 1 }}
           />
           <View
             style={[
@@ -291,7 +296,9 @@ export default function TagsList({ navigation }) {
               onPress={() => setDeleteModalVisible(!deleteModalVisible)}
             >
               <AntDesign name="close" size={24} color={colors.text} />
-              <Text style={styles.modalButtonText}>Annulla</Text>
+              <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                Annulla
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -344,9 +351,9 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: "solid",
+    borderRadius: 50,
+    // borderWidth: 1,
+    // borderStyle: "solid",
   },
   modalButton: {
     borderRadius: 4,

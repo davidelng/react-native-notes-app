@@ -6,18 +6,33 @@ import { AIPrompt } from "../../types";
 const db = Db.getConnection();
 
 export function updateApiKey(value: string) {
-  db.transaction((tx) =>
-    tx.executeSql(
-      queries.get("upsertConf"),
-      ["OPENAI_API_KEY", value],
-      (tx, res) => {
-        return true;
-      },
-      (tx, err) => {
-        return false;
-      }
-    )
-  );
+  if (value !== "") {
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("upsertConf"),
+        ["OPENAI_API_KEY", value],
+        (tx, res) => {
+          return true;
+        },
+        (tx, err) => {
+          return false;
+        }
+      )
+    );
+  } else {
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("deleteConf"),
+        ["OPENAI_API_KEY"],
+        (tx, res) => {
+          return true;
+        },
+        (tx, err) => {
+          return false;
+        }
+      )
+    );
+  }
 }
 
 // db.transaction((tx) =>
