@@ -147,6 +147,7 @@ export default function Settings({ navigation }) {
         [confName, name],
         (tx, res) => {
           closeBottomSheet();
+          alert("Riavvia l'app per vedere il nuovo tema");
           return true;
         },
         (tx, err) => {

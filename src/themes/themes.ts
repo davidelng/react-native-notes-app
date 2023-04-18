@@ -49,7 +49,7 @@ export const DarkDefault: ExtendedTheme = {
  */
 
 export const Slate: ExtendedTheme = {
-  dark: true,
+  dark: false,
   colors: {
     primary: "#5e81ac",
     background: "#f1f5f9",

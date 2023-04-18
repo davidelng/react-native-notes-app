@@ -3,7 +3,7 @@ import { useColorScheme } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import * as Themes from "./src/themes/themes";
-import TabNav from "./src/navigators/BottomNav";
+import TabNav from "./src/navigators/TabNav";
 import "react-native-url-polyfill/auto";
 import * as Db from "./src/db/Db";
 import { queries } from "./src/db/queries";
@@ -14,47 +14,10 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 export default function App() {
   const db = Db.getConnection();
   const scheme = useColorScheme();
-  const [isUsingScheme, setIsUsingScheme] = useState(null);
-  const [defaultTheme, setDefaultTheme] = useState(null);
-  const [lightTheme, setLightTheme] = useState(null);
-  const [darkTheme, setDarkTheme] = useState(null);
+  const [configuration, setConfiguration] = useState({});
+  const [theme, setTheme] = useState(Themes.DarkDefault);
 
-  // db.transaction((tx) =>
-  //   tx.executeSql(
-  //     queries.get("getAllConf"),
-  //     null,
-  //     (txObj, res) => {
-  //       if (res.rows._array.length > 0) {
-  //         for (let conf of res.rows._array) {
-  //           if (conf.key === "USE_SYSTEM_THEME" && conf.value === "enabled") {
-  //             setIsUsingScheme(true);
-  //           } else {
-  //             setIsUsingScheme(false);
-  //           }
-  //           if (conf.key === "DEFAULT_THEME_CHOICE") {
-  //             setDefaultTheme(conf.value);
-  //           } else if (conf.key === "LIGHT_THEME_CHOICE") {
-  //             setLightTheme(conf.value);
-  //           } else if (conf.key === "DARK_THEME_CHOICE") {
-  //             setDarkTheme(conf.value);
-  //           }
-  //         }
-  //       }
-  //       return true;
-  //     },
-  //     (txObj, err) => {
-  //       return false;
-  //     }
-  //   )
-  // );
-
-  // let theme = defaultTheme ? Themes[defaultTheme] : Themes.DarkDefault;
-  // if (isUsingScheme) {
-  //   let dark = darkTheme ? Themes[darkTheme] : Themes.DarkDefault;
-  //   let light = lightTheme ? Themes[lightTheme] : Themes.LightDefault;
-  //   theme = scheme === "dark" ? dark : light;
-  // }
-  const theme = scheme === "dark" ? Themes.DarkDefault : Themes.LightDefault;
+  // const theme = scheme === "dark" ? Themes.DarkDefault : Themes.LightDefault;
 
   // const [fontsLoaded] = useFonts({
   //   Poppins: require("./assets/fonts/Poppins-Regular.ttf"),
@@ -76,7 +39,40 @@ export default function App() {
         db.transaction((tx) => tx.executeSql(value));
       }
     });
+
+    db.transaction((tx) =>
+      tx.executeSql(
+        queries.get("getAllConf"),
+        null,
+        (txObj, res) => {
+          if (res.rows._array.length > 0) {
+            let allConfs = {};
+            for (let conf of res.rows._array) {
+              allConfs[conf.key] = conf.value;
+            }
+            setConfiguration(allConfs);
+          }
+          return true;
+        },
+        (txObj, err) => {
+          return false;
+        }
+      )
+    );
   }, []);
+
+  useEffect(() => {
+    let isUsingScheme = configuration["USE_SYSTEM_THEME"] ?? "notSet";
+    let defaultTheme = configuration["DEFAULT_THEME_CHOICE"] ?? "DarkDefault";
+    let lightTheme = configuration["LIGHT_THEME_CHOICE"] ?? "LightDefault";
+    let darkTheme = configuration["DARK_THEME_CHOICE"] ?? "DarkDefault";
+
+    if (isUsingScheme === "notSet" || isUsingScheme === "enabled") {
+      setTheme(scheme === "dark" ? Themes[darkTheme] : Themes[lightTheme]);
+    } else {
+      setTheme(Themes[defaultTheme]);
+    }
+  }, [configuration, scheme]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

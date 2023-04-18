@@ -6,7 +6,7 @@ queries.set(
   `createTableNotes`,
   `CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    title TEXT NOT NULL, 
+    title TEXT NOT NULL DEFAULT 'Senza titolo', 
     content TEXT NULL, 
     tag INTEGER NULL, 
     pinned INTEGER DEFAULT 0 CHECK (pinned IN (0, 1)), 
